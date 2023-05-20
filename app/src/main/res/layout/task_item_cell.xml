@@ -116,6 +116,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tvDueTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="textEnd"
@@ -128,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="textEnd"
                 android:paddingEnd="5dp"
-                android:text="23/05/20"/>
+                android:text="23/04/20"/>
 
         </LinearLayout>
 

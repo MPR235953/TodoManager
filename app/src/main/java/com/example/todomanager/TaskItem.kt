@@ -3,6 +3,7 @@ package com.example.todomanager
 import android.content.Context
 import androidx.core.content.ContextCompat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 class TaskItem {
@@ -10,16 +11,16 @@ class TaskItem {
     var name: String
     var description: String
     lateinit var createDate: LocalDate
-    var dueDate: LocalDate?
+    var dueDateTime: LocalDateTime?
     lateinit var category: String
     var isTodo: Boolean = false
     var isNotification: Boolean = false
     var isAttachment: Boolean = false
 
-    constructor(name: String, description: String, dueDate: LocalDate?, isTodo: Boolean){
+    constructor(name: String, description: String, dueDateTime: LocalDateTime?, isTodo: Boolean){
         this.name = name
         this.description = description
-        this.dueDate = dueDate
+        this.dueDateTime = dueDateTime
         this.isTodo = isTodo
     }
 

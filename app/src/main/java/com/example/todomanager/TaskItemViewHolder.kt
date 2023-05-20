@@ -20,6 +20,7 @@ RecyclerView.ViewHolder(binding.root) {
         if(!taskItem.isTodo){
             binding.tvName.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             binding.tvDueDate.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+            binding.tvDueTime.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
         }
 
         // set appropriate img and color on done button when task was done
@@ -35,8 +36,13 @@ RecyclerView.ViewHolder(binding.root) {
         }
 
         // if there is due date set it in appropriate format
-        if(taskItem.dueDate != null)
-            binding.tvDueDate.text = taskItem.dueDate!!.format(DateTimeFormatter.ofPattern("yy/MM/dd"))
-        else binding.tvDueDate.text = "No Due Date"
+        if(taskItem.dueDateTime != null) {
+            binding.tvDueDate.text = taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd"))
+            binding.tvDueTime.text = taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("hh:mm"))
+        }
+        else{
+            binding.tvDueDate.text = "--/--/--"
+            binding.tvDueTime.text = "--:--"
+        }
     }
 }

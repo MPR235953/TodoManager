@@ -2,7 +2,7 @@ package com.example.todomanager
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
 class TaskViewModel: ViewModel() {
@@ -13,7 +13,7 @@ class TaskViewModel: ViewModel() {
 
         // Dummy content
         for (i in 1..10){
-            addTaskItem(TaskItem("sth"+i,"desc", if(i % 2 == 0) LocalDate.now() else null, i % 2 == 0))
+            addTaskItem(TaskItem("sth"+i,"desc", if(i % 2 == 0) LocalDateTime.now() else null, i % 2 == 0))
         }
     }
 
@@ -24,13 +24,13 @@ class TaskViewModel: ViewModel() {
     }
 
     fun updateTaskItem(id: UUID, name: String, description: String,
-                       dueDate: LocalDate?, category: String = "", isTodo: Boolean = true,
+                       dueDateTime: LocalDateTime?, category: String = "", isTodo: Boolean = true,
                        isNotification: Boolean = false, isAttachment: Boolean = false){
         val list = taskItems.value
         val task = list?.find { it.id == id }!!
         task.name = name
         task.description = description
-        task.dueDate = dueDate
+        task.dueDateTime = dueDateTime
         task.category = category
         task.isTodo = isTodo
         task.isNotification = isNotification
