@@ -25,8 +25,8 @@ class TaskItem {
 
     // functions to set appropriate image and color to done button
     fun imageResource(): Int =
-        if(isTodo) R.drawable.ic_task_not_done
-        else R.drawable.ic_task_done
+        if(isTodo) R.drawable.ic_task_not_done_24
+        else R.drawable.ic_task_done_24
     fun imageColor(context: Context): Int =
         if(isTodo) todoColor(context)
         else doneColor(context)

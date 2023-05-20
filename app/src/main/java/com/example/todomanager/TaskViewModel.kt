@@ -10,8 +10,10 @@ class TaskViewModel: ViewModel() {
 
     init{
         taskItems.value = mutableListOf()
+
+        // Dummy content
         for (i in 1..10){
-            addTaskItem(TaskItem("sth"+i,"desc", LocalDate.now(), if(i % 2 == 0) true else false))
+            addTaskItem(TaskItem("sth"+i,"desc", if(i % 2 == 0) LocalDate.now() else null, i % 2 == 0))
         }
     }
 

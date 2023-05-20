@@ -7,43 +7,132 @@
     android:layout_margin="5dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/ibtnComplete"
+        <LinearLayout
+            android:id="@+id/ll0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
-            android:contentDescription="CheckBox"
-            android:layout_marginHorizontal="15dp"
-            android:src="@drawable/ic_task_not_done"
-            android:backgroundTint="@android:color/transparent"/>
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tvName"
+            <ImageButton
+                android:id="@+id/ibtnComplete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="15dp"
+                android:backgroundTint="@android:color/transparent"
+                android:contentDescription="CheckBox"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:src="@drawable/ic_task_not_done_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ll0"
+            app:layout_constraintEnd_toStartOf="@+id/ll2"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvName"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="Title"
+                android:textSize="30dp" />
+
+            <TextView
+                android:id="@+id/tvCategory"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="Category" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="sth"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tvDueDate"
-            android:layout_marginHorizontal="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="sth"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="5dp">
+
+                <ImageButton
+                    android:id="@+id/ibtnNotification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/transparent"
+                    android:contentDescription="CheckBox"
+                    android:src="@drawable/ic_notification_12"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/ibtnAttachment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/transparent"
+                    android:contentDescription="CheckBox"
+                    android:src="@drawable/ic_attachment_12"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="textEnd"
+                android:paddingEnd="5dp"
+                android:text="21:37"/>
+
+            <TextView
+                android:id="@+id/tvDueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="textEnd"
+                android:paddingEnd="5dp"
+                android:text="23/05/20"/>
+
+        </LinearLayout>
 
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

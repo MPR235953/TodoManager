@@ -37,6 +37,6 @@ RecyclerView.ViewHolder(binding.root) {
         // if there is due date set it in appropriate format
         if(taskItem.dueDate != null)
             binding.tvDueDate.text = taskItem.dueDate!!.format(DateTimeFormatter.ofPattern("yy/MM/dd"))
-        else binding.tvDueDate.text = ""
+        else binding.tvDueDate.text = "No Due Date"
     }
 }
