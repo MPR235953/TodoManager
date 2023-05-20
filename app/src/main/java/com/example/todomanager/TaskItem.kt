@@ -6,34 +6,28 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-class TaskItem {
+class TaskItem(
+    var name: String,
+    var description: String?,
+    var dueDateTime: LocalDateTime?,
+    var category: String?,
+    var isDone: Boolean = false,
+    var isNotification: Boolean = false,
+    var isAttachment: Boolean = false,
+) {
     var id: UUID = UUID.randomUUID()
-    var name: String
-    var description: String
-    lateinit var createDate: LocalDate
-    var dueDateTime: LocalDateTime?
-    lateinit var category: String
-    var isTodo: Boolean = false
-    var isNotification: Boolean = false
-    var isAttachment: Boolean = false
-
-    constructor(name: String, description: String, dueDateTime: LocalDateTime?, isTodo: Boolean){
-        this.name = name
-        this.description = description
-        this.dueDateTime = dueDateTime
-        this.isTodo = isTodo
-    }
+    var createDate: LocalDateTime = LocalDateTime.now()
 
     // functions to set appropriate image and color to done button
     fun imageResource(): Int =
-        if(isTodo) R.drawable.ic_task_not_done_24
-        else R.drawable.ic_task_done_24
+        if(isDone) R.drawable.ic_task_done_24
+        else R.drawable.ic_task_not_done_24
     fun imageColor(context: Context): Int =
-        if(isTodo) todoColor(context)
-        else doneColor(context)
+        if(isDone) doneColor(context)
+        else notDoneColor(context)
 
     // utils functions to get appropriate colors
-    private fun todoColor(context: Context) =
+    private fun notDoneColor(context: Context) =
         ContextCompat.getColor(context, R.color.purple_200)
     private fun doneColor(context: Context) =
         ContextCompat.getColor(context, R.color.teal_200)

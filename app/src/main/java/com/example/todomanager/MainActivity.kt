@@ -41,6 +41,6 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
     }
 
     override fun completeTaskItem(taskItem: TaskItem) {
-        taskViewModel.markAsCompleted(taskItem)
+        taskViewModel.setDone(taskItem)
     }
 }

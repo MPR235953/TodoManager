@@ -11,16 +11,17 @@ class TaskItemViewHolder(
     private val binding: TaskItemCellBinding,
     private val clickListener: TaskItemClickListener):
 RecyclerView.ViewHolder(binding.root) {
-    private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yy/MM/DD")
-
     fun bindTaskItem(taskItem: TaskItem){
         binding.tvName.text = taskItem.name  // set task name
 
+        binding.tvCategory.text = taskItem.category
+
         // set strike on text when task was done
-        if(!taskItem.isTodo){
+        if(taskItem.isDone){
             binding.tvName.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             binding.tvDueDate.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             binding.tvDueTime.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+            binding.tvCategory.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
         }
 
         // set appropriate img and color on done button when task was done

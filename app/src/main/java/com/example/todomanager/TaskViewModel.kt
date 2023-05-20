@@ -13,7 +13,7 @@ class TaskViewModel: ViewModel() {
 
         // Dummy content
         for (i in 1..10){
-            addTaskItem(TaskItem("sth"+i,"desc", if(i % 2 == 0) LocalDateTime.now() else null, i % 2 == 0))
+            addTaskItem(TaskItem("task "+i,"desc", if(i % 2 == 0) LocalDateTime.now() else null, "Default", isDone = i % 2 == 0))
         }
     }
 
@@ -23,8 +23,8 @@ class TaskViewModel: ViewModel() {
         taskItems.postValue(list)
     }
 
-    fun updateTaskItem(id: UUID, name: String, description: String,
-                       dueDateTime: LocalDateTime?, category: String = "", isTodo: Boolean = true,
+    fun updateTaskItem(id: UUID, name: String, description: String?,
+                       dueDateTime: LocalDateTime?, category: String?, isDone: Boolean = false,
                        isNotification: Boolean = false, isAttachment: Boolean = false){
         val list = taskItems.value
         val task = list?.find { it.id == id }!!
@@ -32,16 +32,16 @@ class TaskViewModel: ViewModel() {
         task.description = description
         task.dueDateTime = dueDateTime
         task.category = category
-        task.isTodo = isTodo
+        task.isDone = isDone
         task.isNotification = isNotification
         task.isAttachment = isAttachment
         taskItems.postValue(list)
     }
 
-    fun markAsCompleted(newTask: TaskItem){
+    fun setDone(newTask: TaskItem){
         val list = taskItems.value
         val task = list?.find { it.id == newTask.id }!!
-        task.isTodo = false
+        task.isDone = true
         taskItems.postValue(list)
     }
 

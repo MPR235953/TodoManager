@@ -8,7 +8,6 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.todomanager.databinding.FragmentNewTaskSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -86,11 +85,11 @@ class NewTaskSheet(var taskItem: TaskItem?) : BottomSheetDialogFragment() {
 
         // create new task item or update existing
         if(taskItem == null){
-            val newTask = TaskItem(name, description, dueDateTime, true)
+            val newTask = TaskItem(name, description, dueDateTime, null)
             taskViewModel.addTaskItem(newTask)
         }
         else{
-            taskViewModel.updateTaskItem(taskItem!!.id, name, description, dueDateTime)
+            taskViewModel.updateTaskItem(taskItem!!.id, name, description, dueDateTime, null)
         }
 
         // clear data on view
