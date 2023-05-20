@@ -2,11 +2,11 @@ package com.example.todomanager
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.time.LocalTime
+import java.time.LocalDate
 import java.util.UUID
 
 class TaskViewModel: ViewModel() {
-    var taskItems = MutableLiveData<MutableList<TaskItem>>()
+    var taskItems = MutableLiveData<MutableList<TaskItem>>()  // list of tasks
 
     init{
         taskItems.value = mutableListOf()
@@ -19,7 +19,7 @@ class TaskViewModel: ViewModel() {
     }
 
     fun updateTaskItem(id: UUID, name: String, description: String,
-                       dueDate: LocalTime?, category: String = "", isTodo: Boolean = true,
+                       dueDate: LocalDate?, category: String = "", isTodo: Boolean = true,
                        isNotification: Boolean = false, isAttachment: Boolean = false){
         val list = taskItems.value
         val task = list?.find { it.id == id }!!
