@@ -12,7 +12,7 @@
         android:orientation="vertical">
 
     <TextView
-        android:id="@+id/taskName"
+        android:id="@+id/tvTaskName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Task Name:"
@@ -21,7 +21,7 @@
         android:layout_gravity="center" />
 
     <TextView
-        android:id="@+id/taskDescription"
+        android:id="@+id/tvTaskDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Task Description:"
@@ -32,7 +32,7 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/newTaskButton"
+        android:id="@+id/fbtnNewTaskButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Task"

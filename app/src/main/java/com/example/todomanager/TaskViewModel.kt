@@ -6,6 +6,10 @@ import java.time.LocalTime
 import java.util.UUID
 
 class TaskViewModel: ViewModel() {
+
+    var name2 = MutableLiveData<String>()
+    var description2 = MutableLiveData<String>()
+
     var taskItems = MutableLiveData<MutableList<TaskItem>>()
 
     init{
