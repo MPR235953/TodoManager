@@ -6,11 +6,61 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="@color/purple_200"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TodoManager"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="15dp"
+            android:textSize="35dp"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/ibtnComplete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:layout_marginHorizontal="15dp"
+            android:src="@drawable/ic_settings"
+            android:backgroundTint="@android:color/transparent"/>
+
+    </LinearLayout>
+
+    <SearchView
+        android:id="@+id/svTask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:padding="4dp"
+        android:queryHint="Search Task"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTodoList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:backgroundTint="@color/black"/>
+        android:layout_height="0dp"
+        android:backgroundTint="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/svTask"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fbtnNewTask"
@@ -22,7 +72,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="5dp"
         android:layout_margin="20dp"
-        app:icon="@drawable/ic_baseline_add_24"
+        app:icon="@drawable/ic_add_task"
         app:iconTint="@color/white"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

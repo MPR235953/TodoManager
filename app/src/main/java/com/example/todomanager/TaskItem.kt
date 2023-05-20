@@ -25,8 +25,8 @@ class TaskItem {
 
     // functions to set appropriate image and color to done button
     fun imageResource(): Int =
-        if(isTodo) R.drawable.ic_baseline_radio_button_unchecked_24
-        else R.drawable.ic_baseline_check_circle_outline_24
+        if(isTodo) R.drawable.ic_task_not_done
+        else R.drawable.ic_task_done
     fun imageColor(context: Context): Int =
         if(isTodo) todoColor(context)
         else doneColor(context)
