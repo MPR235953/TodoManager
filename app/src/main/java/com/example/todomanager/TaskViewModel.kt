@@ -6,10 +6,6 @@ import java.time.LocalTime
 import java.util.UUID
 
 class TaskViewModel: ViewModel() {
-
-    var name2 = MutableLiveData<String>()
-    var description2 = MutableLiveData<String>()
-
     var taskItems = MutableLiveData<MutableList<TaskItem>>()
 
     init{
@@ -22,19 +18,9 @@ class TaskViewModel: ViewModel() {
         taskItems.postValue(list)
     }
 
-    var id: UUID = UUID.randomUUID()
-    lateinit var name: String
-    lateinit var description: String
-    lateinit var createDate: LocalTime
-    lateinit var dueDate: LocalTime
-    lateinit var category: String
-    var isTodo: Boolean = false
-    var isNotification: Boolean = false
-    var isAttachment: Boolean = false
-
     fun updateTaskItem(id: UUID, name: String, description: String,
-                       dueDate: LocalTime, category: String, isTodo: Boolean,
-                       isNotification: Boolean, isAttachment: Boolean){
+                       dueDate: LocalTime?, category: String = "", isTodo: Boolean = true,
+                       isNotification: Boolean = false, isAttachment: Boolean = false){
         val list = taskItems.value
         val task = list?.find { it.id == id }!!
         task.name = name
@@ -49,7 +35,7 @@ class TaskViewModel: ViewModel() {
 
     fun markAsCompleted(newTask: TaskItem){
         val list = taskItems.value
-        val task = list?.find { it.id == id }!!
+        val task = list?.find { it.id == newTask.id }!!
         task.isTodo = false
         taskItems.postValue(list)
     }
