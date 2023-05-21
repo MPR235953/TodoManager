@@ -38,8 +38,8 @@ RecyclerView.ViewHolder(binding.root) {
 
         // if there is due date set it in appropriate format
         if(taskItem.dueDateTime != null) {
-            binding.tvDueDate.text = taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd"))
-            binding.tvDueTime.text = taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("hh:mm"))
+            binding.tvDueDate.text = DataTimeConverter.date2String(taskItem.dueDateTime!!)
+            binding.tvDueTime.text = DataTimeConverter.time2String(taskItem.dueDateTime!!)
         }
         else{
             binding.tvDueDate.text = "--/--/--"

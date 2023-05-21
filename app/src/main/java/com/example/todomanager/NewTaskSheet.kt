@@ -16,10 +16,9 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class NewTaskSheet(var taskItem: TaskItem?) : BottomSheetDialogFragment() {
+class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentNewTaskSheetBinding
-    private lateinit var taskViewModel: TaskViewModel
     private var dueDateTime: LocalDateTime? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,7 +39,6 @@ class NewTaskSheet(var taskItem: TaskItem?) : BottomSheetDialogFragment() {
         else binding.tvTaskTitle.text = "New Task"
 
         // save new task
-        taskViewModel = ViewModelProvider(activity).get(TaskViewModel::class.java)
         binding.btnSave.setOnClickListener{
             saveAction()
         }
@@ -79,6 +77,8 @@ class NewTaskSheet(var taskItem: TaskItem?) : BottomSheetDialogFragment() {
     }
 
     private fun saveAction(){
+        val sqLiteManager: SQLiteManager? = SQLiteManager.instanceOfDatabase(context)
+
         // get data from layout
         val name = binding.tieName.text.toString()
         val description = binding.tieDescription.text.toString()
@@ -86,10 +86,11 @@ class NewTaskSheet(var taskItem: TaskItem?) : BottomSheetDialogFragment() {
         // create new task item or update existing
         if(taskItem == null){
             val newTask = TaskItem(name, description, dueDateTime, null)
-            taskViewModel.addTaskItem(newTask)
+            TaskViewModel.addTaskItem(newTask)
+            sqLiteManager?.addTaskItem(newTask)
         }
         else{
-            taskViewModel.updateTaskItem(taskItem!!.id, name, description, dueDateTime, null)
+            TaskViewModel.updateTaskItem(taskItem!!.id, name, description, dueDateTime, null)
         }
 
         // clear data on view
