@@ -59,7 +59,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(NAME_COl, taskItem.name)
         values.put(DESCRIPTION_COL, taskItem.description)
         values.put(CREATE_DATETIME_COL, taskItem.createDateTime.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
-        values.put(DUE_DATETIME_COL, taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
+        if(taskItem.dueDateTime != null) values.put(DUE_DATETIME_COL, taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
         values.put(CATEGORY_COL, taskItem.category)
         values.put(IS_DONE_COL, taskItem.isDone)
         values.put(IS_NOTIFICATION_COL, taskItem.isNotification)
@@ -71,35 +71,36 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
 
     fun deleteTaskItem(taskItemId: Int) {
         val db = this.writableDatabase
-        val whereClause = "$ID_COL = $taskItemId"
-        val whereArgs = arrayOf(taskItemId.toString())
+        val whereClause = "$ID_COL = ?"
+        val whereArgs = arrayOf(taskItemId).toString()
 
-        db.delete(TABLE_NAME, whereClause, whereArgs)
+        db.delete(TABLE_NAME, whereClause, arrayOf(whereArgs))
         db.close()
     }
 
-    fun updateTaskItem(taskItem: TaskItem) {
+    fun updateTaskItem(id: String, name: String, description: String?,
+                       dueDateTime: LocalDateTime?, category: String?, isDone: Boolean = false,
+                       isNotification: Boolean = false, isAttachment: Boolean = false) {
         val db = this.writableDatabase
         val values = ContentValues()
 
-        values.put(ID_COL, taskItem.id)
-        values.put(NAME_COl, taskItem.name)
-        values.put(DESCRIPTION_COL, taskItem.description)
-        values.put(CREATE_DATETIME_COL, taskItem.createDateTime.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
-        values.put(DUE_DATETIME_COL, taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
-        values.put(CATEGORY_COL, taskItem.category)
-        values.put(IS_DONE_COL, taskItem.isDone)
-        values.put(IS_NOTIFICATION_COL, taskItem.isNotification)
-        values.put(IS_ATTACHMENT_COL, taskItem.isAttachment)
+        values.put(NAME_COl, name)
+        values.put(DESCRIPTION_COL, description)
+        values.put(DUE_DATETIME_COL, dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
+        values.put(CATEGORY_COL, category)
+        values.put(IS_DONE_COL, isDone)
+        values.put(IS_NOTIFICATION_COL, isNotification)
+        values.put(IS_ATTACHMENT_COL, isAttachment)
 
-        val whereClause = "$ID_COL = ${taskItem.id}"
-        val whereArgs = arrayOf(taskItem.id)
+        val whereClause = "$ID_COL = ?"
+        val whereArgs = arrayOf(id)
 
         db.update(TABLE_NAME, values, whereClause, whereArgs)
         db.close()
     }
 
-    fun populateNoteListArray() {
+    fun loadToLocalMemory() {
+        TaskViewModel.taskItems.value = mutableListOf()
         val sqLiteDatabase = this.readableDatabase
         val result = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)
         for (i in 0 until result.count) {
@@ -114,15 +115,25 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
             val isNotification = result.getInt(7)
             val isAttachment = result.getInt(8)
 
-
             val taskItem = TaskItem(title, desc, DataTimeConverter.string2DateTime(dueDateTime), category,
                 id, DataTimeConverter.string2DateTime(createDateTime),
                 if(isDone == 0) false else true, if(isNotification == 0) false else true, if(isAttachment == 0) false else true)
 
             TaskViewModel.addTaskItem(taskItem)
         }
+    }
 
+    fun toggleState(taskItem: TaskItem){
+        val db = this.writableDatabase
+        val values = ContentValues()
 
+        values.put(IS_DONE_COL, if (taskItem.isDone) 0 else 1)
+
+        val whereClause = "$ID_COL = ?"
+        val whereArgs = arrayOf(taskItem.id)
+
+        db.update(TABLE_NAME, values, whereClause, whereArgs)
+        db.close()
     }
 
     fun clearTable() {

@@ -29,7 +29,7 @@ RecyclerView.ViewHolder(binding.root) {
         binding.ibtnComplete.setColorFilter(taskItem.imageColor(context))
 
         binding.ibtnComplete.setOnClickListener{
-            clickListener.completeTaskItem(taskItem)
+            clickListener.changeTaskItemState(taskItem)
         }
 
         binding.cvTaskCellContainer.setOnClickListener{

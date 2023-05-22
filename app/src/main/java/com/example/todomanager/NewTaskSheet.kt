@@ -23,50 +23,57 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val activity = requireActivity()
 
         // decide what will be seen when add button was clicked
         if(taskItem != null){
+            // set proper view
             binding.tvTaskTitle.text = "Edit Task"
+            binding.btnDelete.visibility = View.VISIBLE
+            binding.container.visibility = View.VISIBLE
+
             val editable = Editable.Factory.getInstance()
             binding.tieName.text = editable.newEditable(taskItem!!.name)
             binding.tieDescription.text = editable.newEditable(taskItem!!.description)
+            binding.tieCategory.text = editable.newEditable(taskItem!!.category)
             if(taskItem!!.dueDateTime != null){
                 dueDateTime = taskItem!!.dueDateTime!!
-                updateDateTimeOnButton()
             }
         }
-        else binding.tvTaskTitle.text = "New Task"
+        else{
+            // set proper view
+            binding.tvTaskTitle.text = "New Task"
+            binding.btnDelete.visibility = View.GONE
+            binding.container.visibility = View.GONE
+        }
 
-        // save new task
+        // btn listeners
+        binding.ibtnDateTime.setOnClickListener{
+            openDateTimePicker()
+        }
         binding.btnSave.setOnClickListener{
             saveAction()
         }
-        binding.btnPickDueDateTime.setOnClickListener{
-            openDateTimePicker()
+        binding.btnClose.setOnClickListener{
+            dismiss()
         }
-    }
-
-    private fun updateDateTimeOnButton() {
-        binding.btnPickDueDateTime.text = dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm"))
     }
 
     private fun openDateTimePicker(){
-        if(dueDateTime == null) dueDateTime = LocalDateTime.now()
+        if(this.dueDateTime == null) this.dueDateTime = LocalDateTime.now()
 
         // Time Picker stuff
         val timeListener = TimePickerDialog.OnTimeSetListener{ _, h, m ->
-            dueDateTime = dueDateTime!!.toLocalDate().atTime(LocalTime.of(h, m))
+            this.dueDateTime = this.dueDateTime!!.toLocalDate().atTime(LocalTime.of(h, m))
         }
-        val timeDialog = TimePickerDialog(activity as Context, timeListener, dueDateTime!!.hour, dueDateTime!!.minute, true)
+        val timeDialog = TimePickerDialog(activity as Context, timeListener, this.dueDateTime!!.hour, this.dueDateTime!!.minute, true)
         timeDialog.setTitle("Task Due Time")
         timeDialog.show()
 
         // Date Picker stuff
         val dateListener = DatePickerDialog.OnDateSetListener{ _, y, m, d ->
-            dueDateTime = dueDateTime!!.toLocalTime().atDate(LocalDate.of(y, m, d))
+            this.dueDateTime = this.dueDateTime!!.toLocalTime().atDate(LocalDate.of(y, m, d))
         }
-        val dateDialog = DatePickerDialog(activity as Context, dateListener, dueDateTime!!.year, dueDateTime!!.month.value, dueDateTime!!.dayOfMonth)
+        val dateDialog = DatePickerDialog(activity as Context, dateListener, this.dueDateTime!!.year, this.dueDateTime!!.month.value, this.dueDateTime!!.dayOfMonth)
         dateDialog.setTitle("Task Due Date")
         dateDialog.show()
     }
@@ -81,20 +88,24 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
         // get data from layout
         val name = binding.tieName.text.toString()
         val description = binding.tieDescription.text.toString()
+        val category = binding.tieCategory.text.toString()
 
         // create new task item or update existing
         if(taskItem == null){
-            val newTask = TaskItem(name, description, dueDateTime, null)
-            TaskViewModel.addTaskItem(newTask)
+            val newTask = TaskItem(name, description, this.dueDateTime, category)
+            //TaskViewModel.addTaskItem(newTask)
             MainActivity.sqLiteManager?.addTaskItem(newTask)
         }
         else{
-            TaskViewModel.updateTaskItem(taskItem!!.id, name, description, dueDateTime, null)
+            MainActivity.sqLiteManager?.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category)
+            //TaskViewModel.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category)
         }
+        MainActivity.sqLiteManager?.loadToLocalMemory()
 
         // clear data on view
         binding.tieName.setText("")
         binding.tieDescription.setText("")
+        binding.tieCategory.setText("")
         dismiss()
     }
 

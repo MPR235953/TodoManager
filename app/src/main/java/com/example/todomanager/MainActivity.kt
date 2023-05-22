@@ -22,11 +22,10 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
         // init sigleton
         sqLiteManager = SQLiteManager.instanceOfDatabase(this)
         //sqLiteManager?.clearTable()
+        sqLiteManager?.loadToLocalMemory()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        loadFromDBToMemory()
 
         // set up btn listener
         binding.fbtnNewTask.setOnClickListener{
@@ -34,10 +33,6 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
         }
 
         setRecyclerView()   // show tasks list on layout
-    }
-
-    private fun loadFromDBToMemory() {
-        sqLiteManager?.populateNoteListArray()
     }
 
     fun setRecyclerView(){
@@ -54,8 +49,10 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
         NewTaskSheet(this, taskItem).show(supportFragmentManager, "newTaskTag")
     }
 
-    override fun completeTaskItem(taskItem: TaskItem) {
-        TaskViewModel.setDone(taskItem)
+    override fun changeTaskItemState(taskItem: TaskItem) {
+        sqLiteManager?.toggleState(taskItem)
+        sqLiteManager?.loadToLocalMemory()
+        //TaskViewModel.setDone(taskItem)
         // update db
     }
 }
