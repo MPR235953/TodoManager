@@ -7,18 +7,27 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todomanager.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), TaskItemClickListener {
+    companion object{
+        var sqLiteManager: SQLiteManager? = null
+    }
+
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var taskViewModel: TaskViewModel
     //private lateinit var taskViewModel: SQLiteManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // init sigleton
+        sqLiteManager = SQLiteManager.instanceOfDatabase(this)
+        //sqLiteManager?.clearTable()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         loadFromDBToMemory()
 
-        //taskViewModel = SQLiteManager(this, null)
         // set up btn listener
         binding.fbtnNewTask.setOnClickListener{
             NewTaskSheet(this, null).show(supportFragmentManager, "newTaskTag")
@@ -28,7 +37,6 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
     }
 
     private fun loadFromDBToMemory() {
-        val sqLiteManager: SQLiteManager? = SQLiteManager.instanceOfDatabase(this)
         sqLiteManager?.populateNoteListArray()
     }
 

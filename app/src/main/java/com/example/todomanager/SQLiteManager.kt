@@ -11,6 +11,29 @@ import java.time.format.DateTimeFormatter
 
 class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
+    companion object {
+        var sqLiteManager: SQLiteManager? = null
+        fun instanceOfDatabase(context: Context?): SQLiteManager? {
+            if (sqLiteManager == null) sqLiteManager = SQLiteManager(context)
+
+            return sqLiteManager
+        }
+
+        private val DATABASE_NAME = "TODO_DB"
+        private val DATABASE_VERSION = 1
+
+        private const val TABLE_NAME = "todos"
+        private const val ID_COL = "id"
+        private const val NAME_COl = "name"
+        private const val DESCRIPTION_COL = "description"
+        private const val CREATE_DATETIME_COL = "create_datetime"
+        private const val DUE_DATETIME_COL = "due_datetime"
+        private const val CATEGORY_COL = "category"
+        private const val IS_DONE_COL = "is_done"
+        private const val IS_NOTIFICATION_COL = "is_notification"
+        private const val IS_ATTACHMENT_COL = "is_attachment"
+    }
+
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE " + TABLE_NAME + " ("
                 + ID_COL + " TEXT PRIMARY KEY, " +
@@ -46,6 +69,36 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
     }
 
+    fun deleteTaskItem(taskItemId: Int) {
+        val db = this.writableDatabase
+        val whereClause = "$ID_COL = $taskItemId"
+        val whereArgs = arrayOf(taskItemId.toString())
+
+        db.delete(TABLE_NAME, whereClause, whereArgs)
+        db.close()
+    }
+
+    fun updateTaskItem(taskItem: TaskItem) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+
+        values.put(ID_COL, taskItem.id)
+        values.put(NAME_COl, taskItem.name)
+        values.put(DESCRIPTION_COL, taskItem.description)
+        values.put(CREATE_DATETIME_COL, taskItem.createDateTime.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
+        values.put(DUE_DATETIME_COL, taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
+        values.put(CATEGORY_COL, taskItem.category)
+        values.put(IS_DONE_COL, taskItem.isDone)
+        values.put(IS_NOTIFICATION_COL, taskItem.isNotification)
+        values.put(IS_ATTACHMENT_COL, taskItem.isAttachment)
+
+        val whereClause = "$ID_COL = ${taskItem.id}"
+        val whereArgs = arrayOf(taskItem.id)
+
+        db.update(TABLE_NAME, values, whereClause, whereArgs)
+        db.close()
+    }
+
     fun populateNoteListArray() {
         val sqLiteDatabase = this.readableDatabase
         val result = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)
@@ -66,51 +119,15 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
                 id, DataTimeConverter.string2DateTime(createDateTime),
                 if(isDone == 0) false else true, if(isNotification == 0) false else true, if(isAttachment == 0) false else true)
 
-            var t = taskItem
-
             TaskViewModel.addTaskItem(taskItem)
         }
 
 
     }
 
-    /*fun updateNoteInDB(note: Note) {
-        val sqLiteDatabase = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(ID_FIELD, note.getId())
-        contentValues.put(TITLE_FIELD, note.getTitle())
-        contentValues.put(DESC_FIELD, note.getDescription())
-        contentValues.put(DELETED_FIELD, getStringFromDate(note.getDeleted()))
-        sqLiteDatabase.update(
-            TABLE_NAME,
-            contentValues,
-            ID_FIELD + " =? ",
-            arrayOf<String>(java.lang.String.valueOf(note.getId()))
-        )
-    }*/
-
-    companion object {
-
-        var sqLiteManager: SQLiteManager? = null
-
-        fun instanceOfDatabase(context: Context?): SQLiteManager? {
-            if (sqLiteManager == null) sqLiteManager = SQLiteManager(context)
-
-            return sqLiteManager
-        }
-
-        private val DATABASE_NAME = "TODO_DB"
-        private val DATABASE_VERSION = 1
-
-        private const val TABLE_NAME = "todos"
-        private const val ID_COL = "id"
-        private const val NAME_COl = "name"
-        private const val DESCRIPTION_COL = "description"
-        private const val CREATE_DATETIME_COL = "create_datetime"
-        private const val DUE_DATETIME_COL = "due_datetime"
-        private const val CATEGORY_COL = "category"
-        private const val IS_DONE_COL = "is_done"
-        private const val IS_NOTIFICATION_COL = "is_notification"
-        private const val IS_ATTACHMENT_COL = "is_attachment"
+    fun clearTable() {
+        val db = writableDatabase
+        db.execSQL("DELETE FROM $TABLE_NAME")
+        db.close()
     }
 }

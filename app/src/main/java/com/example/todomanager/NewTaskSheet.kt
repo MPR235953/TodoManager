@@ -77,7 +77,6 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
     }
 
     private fun saveAction(){
-        val sqLiteManager: SQLiteManager? = SQLiteManager.instanceOfDatabase(context)
 
         // get data from layout
         val name = binding.tieName.text.toString()
@@ -87,7 +86,7 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
         if(taskItem == null){
             val newTask = TaskItem(name, description, dueDateTime, null)
             TaskViewModel.addTaskItem(newTask)
-            sqLiteManager?.addTaskItem(newTask)
+            MainActivity.sqLiteManager?.addTaskItem(newTask)
         }
         else{
             TaskViewModel.updateTaskItem(taskItem!!.id, name, description, dueDateTime, null)
