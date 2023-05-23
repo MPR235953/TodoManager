@@ -2,7 +2,6 @@ package com.example.todomanager
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todomanager.databinding.ActivityMainBinding
 
@@ -29,7 +28,10 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
 
         // set up btn listener
         binding.fbtnNewTask.setOnClickListener{
-            NewTaskSheet(this, null).show(supportFragmentManager, "newTaskTag")
+            TaskSheet(this, null).show(supportFragmentManager, "newTaskTag")
+        }
+        binding.ibtnSettings.setOnClickListener {
+            SettingsSheet(this).show(supportFragmentManager, "newSettingsTag")
         }
 
         setRecyclerView()   // show tasks list on layout
@@ -46,7 +48,7 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
     }
 
     override fun editTaskItem(taskItem: TaskItem) {
-        NewTaskSheet(this, taskItem).show(supportFragmentManager, "newTaskTag")
+        TaskSheet(this, taskItem).show(supportFragmentManager, "newTaskTag")
     }
 
     override fun changeTaskItemState(taskItem: TaskItem) {

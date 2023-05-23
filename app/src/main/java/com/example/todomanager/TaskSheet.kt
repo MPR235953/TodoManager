@@ -8,21 +8,24 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
-import com.example.todomanager.databinding.FragmentNewTaskSheetBinding
+import com.example.todomanager.databinding.FragmentTaskSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
-class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFragment() {
+class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFragment() {
 
-    private lateinit var binding: FragmentNewTaskSheetBinding
+    private lateinit var binding: FragmentTaskSheetBinding
     private var dueDateTime: LocalDateTime? = null
     private var isDone: Int = 0
     private var isNotification: Int = 0
     private var isAttachment: Int = 0
+
+    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentTaskSheetBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -116,11 +119,6 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
         val dateDialog = DatePickerDialog(activity as Context, dateListener, this.dueDateTime!!.year, this.dueDateTime!!.month.value, this.dueDateTime!!.dayOfMonth)
         dateDialog.setTitle("Task Due Date")
         dateDialog.show()
-    }
-
-    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentNewTaskSheetBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     private fun saveAction(){

@@ -13,8 +13,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         var sqLiteManager: SQLiteManager? = null
-        var isDoneFilter: Int? = null
-        var categoryFilter: String? = null
+
         fun instanceOfDatabase(context: Context?): SQLiteManager? {
             if (sqLiteManager == null) sqLiteManager = SQLiteManager(context)
 
@@ -35,6 +34,10 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val IS_NOTIFICATION_COL = "is_notification"
         private const val IS_ATTACHMENT_COL = "is_attachment"
     }
+
+    var isDoneFilter: Int? = null
+    var categoryFilter: String? = null
+    var notifyDelay: Int? = null
 
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE " + TABLE_NAME + " ("
