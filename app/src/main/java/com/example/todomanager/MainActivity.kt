@@ -1,6 +1,7 @@
 package com.example.todomanager
 
 import android.os.Bundle
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todomanager.databinding.ActivityMainBinding
@@ -33,6 +34,21 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
         binding.ibtnSettings.setOnClickListener {
             SettingsSheet(this).show(supportFragmentManager, "newSettingsTag")
         }
+
+        binding.svTaskByName.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                binding.svTaskByName.clearFocus()
+                if(!p0!!.isNotBlank()) sqLiteManager?.taskNameFilter = null
+                else sqLiteManager?.taskNameFilter = p0
+                sqLiteManager?.loadToLocalMemory()
+                return true
+            }
+
+        })
 
         setRecyclerView()   // show tasks list on layout
     }
