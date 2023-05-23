@@ -25,10 +25,12 @@ RecyclerView.ViewHolder(binding.root) {
         }
 
         // set appropriate img and color on done button when task was done
-        binding.ibtnComplete.setImageResource(taskItem.imageResource())
-        binding.ibtnComplete.setColorFilter(taskItem.imageColor(context))
+        binding.ibtnIsDone.setImageResource(taskItem.imageResourceForIsDoneButton())
+        binding.ibtnIsDone.setColorFilter(taskItem.imageColorForIsDoneButton(context))
+        binding.ibtnIsNotification.setColorFilter(taskItem.imageColorForIsNotificationButton(context))
+        binding.ibtnIsAttachment.setColorFilter(taskItem.imageColorForIsAttachmentButton(context))
 
-        binding.ibtnComplete.setOnClickListener{
+        binding.ibtnIsDone.setOnClickListener{
             clickListener.changeTaskItemState(taskItem)
         }
 

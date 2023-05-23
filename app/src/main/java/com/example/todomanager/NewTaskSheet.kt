@@ -20,17 +20,27 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
 
     private lateinit var binding: FragmentNewTaskSheetBinding
     private var dueDateTime: LocalDateTime? = null
+    private var isDone: Int = 0
+    private var isNotification: Int = 0
+    private var isAttachment: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // decide what will be seen when add button was clicked
         if(taskItem != null){
+            // set styles
+            binding.ibtnIsDone.setImageResource(taskItem!!.imageResourceForIsDoneButton())
+            binding.ibtnIsDone.setColorFilter(taskItem!!.imageColorForIsDoneButton(requireContext()))
+            binding.ibtnIsNotification.setColorFilter(taskItem!!.imageColorForIsNotificationButton(requireContext()))
+            binding.ibtnIsAttachment.setColorFilter(taskItem!!.imageColorForIsAttachmentButton(requireContext()))
+
             // set proper view
             binding.tvTaskTitle.text = "Edit Task"
             binding.btnDelete.visibility = View.VISIBLE
-            binding.container.visibility = View.VISIBLE
+            binding.llDateTimes.visibility = View.VISIBLE
 
+            // enable editting form fields
             val editable = Editable.Factory.getInstance()
             binding.tieName.text = editable.newEditable(taskItem!!.name)
             binding.tieDescription.text = editable.newEditable(taskItem!!.description)
@@ -38,35 +48,52 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
             binding.tvCreatedDateTime.text = DataTimeConverter.dateTime2String(taskItem!!.createDateTime)
             binding.tvDueDateTime.text = DataTimeConverter.dateTime2String(taskItem!!.dueDateTime!!)
 
+            // get data from clicked task
             if(taskItem!!.dueDateTime != null){
                 dueDateTime = taskItem!!.dueDateTime!!
             }
+            this.isDone = taskItem!!.isDone
+            this.isNotification = taskItem!!.isNotification
+            this.isAttachment = taskItem!!.isAttachment
         }
         else{
             // set proper view
             binding.tvTaskTitle.text = "New Task"
             binding.btnDelete.visibility = View.GONE
-            binding.container.visibility = View.GONE
+            //binding.llDateTimes.visibility = View.GONE
+            binding.ibtnIsDone.visibility = View.GONE
+            //binding.llAtachments.visibility = View.GONE
         }
 
-        // btn listeners
-        binding.ibtnDateTime.setOnClickListener{
-            openDateTimePicker()
-        }
-        binding.btnSave.setOnClickListener{
-            saveAction()
-        }
-        binding.btnDelete.setOnClickListener{
-            deleteAction()
-        }
-        binding.btnClose.setOnClickListener{
-            dismiss()
-        }
+        // top button listeners
+        binding.ibtnDateTime.setOnClickListener{ openDateTimePicker() }
+        binding.ibtnIsDone.setOnClickListener{ showChangedTaskItemState() }
+        binding.ibtnIsNotification.setOnClickListener{ showChangedTaskItemNotification() }
+        binding.ibtnIsAttachment.setOnClickListener{ showChangedTaskItemAttachment() }  // change to attach method
+
+        // bottom button listeners
+        binding.btnSave.setOnClickListener{ saveAction() }
+        binding.btnDelete.setOnClickListener{ deleteAction() }
+        binding.btnClose.setOnClickListener{ dismiss() }
     }
 
     private fun showChangedDateTime(){
         binding.tvDueDateTime.text = DataTimeConverter.dateTime2String(this.dueDateTime!!)
     }
+    private fun showChangedTaskItemState(){
+        this.isDone = if(this.isDone == 1) 0 else 1
+        binding.ibtnIsDone.setImageResource(TaskItem.previewImageResource(this.isDone))
+        binding.ibtnIsDone.setColorFilter(TaskItem.previewImageColor(requireContext(), this.isDone))
+    }
+    private fun showChangedTaskItemNotification(){
+        this.isNotification = if(this.isNotification == 1) 0 else 1
+        binding.ibtnIsNotification.setColorFilter(TaskItem.previewImageColor(requireContext(), this.isNotification))
+    }
+    private fun showChangedTaskItemAttachment(){
+        this.isAttachment = if(this.isAttachment == 1) 0 else 1
+        binding.ibtnIsAttachment.setColorFilter(TaskItem.previewImageColor(requireContext(), this.isAttachment))
+    }
+
 
     private fun openDateTimePicker(){
         if(this.dueDateTime == null) this.dueDateTime = LocalDateTime.now()
@@ -84,6 +111,7 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
         val dateListener = DatePickerDialog.OnDateSetListener{ _, y, m, d ->
             this.dueDateTime = this.dueDateTime!!.toLocalTime().atDate(LocalDate.of(y, m, d))
             showChangedDateTime()
+            binding.ibtnDateTime.setColorFilter(TaskItem.previewImageColor(requireContext(), active=1))
         }
         val dateDialog = DatePickerDialog(activity as Context, dateListener, this.dueDateTime!!.year, this.dueDateTime!!.month.value, this.dueDateTime!!.dayOfMonth)
         dateDialog.setTitle("Task Due Date")
@@ -104,12 +132,12 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
 
         // create new task item or update existing
         if(taskItem == null){
-            val newTask = TaskItem(name, description, this.dueDateTime, category)
+            val newTask = TaskItem(name, description, this.dueDateTime, category, isDone=this.isDone, isNotification=this.isNotification, isAttachment=this.isAttachment)
             //TaskViewModel.addTaskItem(newTask)
             MainActivity.sqLiteManager?.addTaskItem(newTask)
         }
         else{
-            MainActivity.sqLiteManager?.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category)
+            MainActivity.sqLiteManager?.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category, this.isDone, this.isNotification, this.isAttachment)
             //TaskViewModel.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category)
         }
         MainActivity.sqLiteManager?.loadToLocalMemory()

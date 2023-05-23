@@ -81,8 +81,8 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun updateTaskItem(id: String, name: String, description: String?,
-                       dueDateTime: LocalDateTime?, category: String?, isDone: Boolean = false,
-                       isNotification: Boolean = false, isAttachment: Boolean = false) {
+                       dueDateTime: LocalDateTime?, category: String?, isDone: Int = 0,
+                       isNotification: Int = 0, isAttachment: Int = 0) {
         val db = this.writableDatabase
         val values = ContentValues()
 

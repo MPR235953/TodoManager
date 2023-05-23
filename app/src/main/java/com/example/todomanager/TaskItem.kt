@@ -36,16 +36,38 @@ class TaskItem{
     }
 
     // functions to set appropriate image and color to done button
-    fun imageResource(): Int =
-        if(isDone == 1) R.drawable.ic_task_done_24
-        else R.drawable.ic_task_not_done_24
-    fun imageColor(context: Context): Int =
-        if(isDone == 1) doneColor(context)
-        else notDoneColor(context)
+    fun imageResourceForIsDoneButton(isDone: Int? = null): Int {
+        val flag = if (isDone != null) isDone else this.isDone
+        if (flag == 1) return R.drawable.ic_task_done_24
+        else return R.drawable.ic_task_not_done_24
+    }
+    fun imageColorForIsDoneButton(context: Context, isDone: Int? = null): Int {
+        val flag = if (isDone != null) isDone else this.isDone
+        if (flag == 1) return ContextCompat.getColor(context, R.color.teal_200)
+        else return ContextCompat.getColor(context, R.color.purple_200)
+    }
 
-    // utils functions to get appropriate colors
-    private fun notDoneColor(context: Context) =
-        ContextCompat.getColor(context, R.color.purple_200)
-    private fun doneColor(context: Context) =
-        ContextCompat.getColor(context, R.color.teal_200)
+    fun imageColorForIsNotificationButton(context: Context, isNotification: Int? = null): Int {
+        val flag = if (isNotification != null) isNotification else this.isNotification
+        if (flag == 1) return ContextCompat.getColor(context, R.color.teal_200)
+        else return ContextCompat.getColor(context, R.color.purple_200)
+    }
+
+    fun imageColorForIsAttachmentButton(context: Context, isAttachment: Int? = null): Int {
+        val flag = if (isAttachment != null) isAttachment else this.isAttachment
+        if (flag == 1) return ContextCompat.getColor(context, R.color.teal_200)
+        else return ContextCompat.getColor(context, R.color.purple_200)
+    }
+
+    companion object{
+        fun previewImageResource(active: Int): Int {
+            if (active == 1) return R.drawable.ic_task_done_24
+            else return R.drawable.ic_task_not_done_24
+        }
+        fun previewImageColor(context: Context, active: Int): Int {
+            if (active == 1) return ContextCompat.getColor(context, R.color.teal_200)
+            else return ContextCompat.getColor(context, R.color.purple_200)
+        }
+    }
+
 }
