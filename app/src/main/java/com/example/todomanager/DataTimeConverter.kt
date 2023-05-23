@@ -9,6 +9,10 @@ class DataTimeConverter {
             return LocalDateTime.parse(string, DateTimeFormatter.ofPattern("yy/MM/dd HH:mm"))
         }
 
+        fun dateTime2String(localDateTime: LocalDateTime): String{
+            return localDateTime.format(DateTimeFormatter.ofPattern("yy/MM/dd HH:mm"))
+        }
+
         fun date2String(localDateTime: LocalDateTime): String{
             return localDateTime.format(DateTimeFormatter.ofPattern("yy/MM/dd"))
         }

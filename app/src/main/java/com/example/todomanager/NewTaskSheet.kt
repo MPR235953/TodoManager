@@ -35,6 +35,9 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
             binding.tieName.text = editable.newEditable(taskItem!!.name)
             binding.tieDescription.text = editable.newEditable(taskItem!!.description)
             binding.tieCategory.text = editable.newEditable(taskItem!!.category)
+            binding.tvCreatedDateTime.text = DataTimeConverter.dateTime2String(taskItem!!.createDateTime)
+            binding.tvDueDateTime.text = DataTimeConverter.dateTime2String(taskItem!!.dueDateTime!!)
+
             if(taskItem!!.dueDateTime != null){
                 dueDateTime = taskItem!!.dueDateTime!!
             }
@@ -54,13 +57,15 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
             saveAction()
         }
         binding.btnDelete.setOnClickListener{
-            MainActivity.sqLiteManager?.deleteTaskItem(taskItem!!.id)
-            MainActivity.sqLiteManager?.loadToLocalMemory()
-            dismiss()
+            deleteAction()
         }
         binding.btnClose.setOnClickListener{
             dismiss()
         }
+    }
+
+    private fun showChangedDateTime(){
+        binding.tvDueDateTime.text = DataTimeConverter.dateTime2String(this.dueDateTime!!)
     }
 
     private fun openDateTimePicker(){
@@ -69,6 +74,7 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
         // Time Picker stuff
         val timeListener = TimePickerDialog.OnTimeSetListener{ _, h, m ->
             this.dueDateTime = this.dueDateTime!!.toLocalDate().atTime(LocalTime.of(h, m))
+            showChangedDateTime()
         }
         val timeDialog = TimePickerDialog(activity as Context, timeListener, this.dueDateTime!!.hour, this.dueDateTime!!.minute, true)
         timeDialog.setTitle("Task Due Time")
@@ -77,6 +83,7 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
         // Date Picker stuff
         val dateListener = DatePickerDialog.OnDateSetListener{ _, y, m, d ->
             this.dueDateTime = this.dueDateTime!!.toLocalTime().atDate(LocalDate.of(y, m, d))
+            showChangedDateTime()
         }
         val dateDialog = DatePickerDialog(activity as Context, dateListener, this.dueDateTime!!.year, this.dueDateTime!!.month.value, this.dueDateTime!!.dayOfMonth)
         dateDialog.setTitle("Task Due Date")
@@ -111,6 +118,12 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
         binding.tieName.setText("")
         binding.tieDescription.setText("")
         binding.tieCategory.setText("")
+        dismiss()
+    }
+
+    private fun deleteAction(){
+        MainActivity.sqLiteManager?.deleteTaskItem(taskItem!!.id)
+        MainActivity.sqLiteManager?.loadToLocalMemory()
         dismiss()
     }
 
