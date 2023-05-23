@@ -13,6 +13,8 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         var sqLiteManager: SQLiteManager? = null
+        var isDoneFilter: Int? = null
+        var categoryFilter: String? = null
         fun instanceOfDatabase(context: Context?): SQLiteManager? {
             if (sqLiteManager == null) sqLiteManager = SQLiteManager(context)
 
@@ -102,7 +104,14 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
     fun loadToLocalMemory() {
         TaskViewModel.taskItems.value = mutableListOf()
         val sqLiteDatabase = this.readableDatabase
-        val result = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)
+
+        var query: String = ""
+        if(isDoneFilter == null && categoryFilter == null) query = "SELECT * FROM " + TABLE_NAME
+        else if (isDoneFilter != null && categoryFilter == null) query = "SELECT * FROM $TABLE_NAME WHERE $IS_DONE_COL = $isDoneFilter"
+        else if (isDoneFilter == null && categoryFilter != null) query = "SELECT * FROM $TABLE_NAME WHERE $CATEGORY_COL = '$categoryFilter'"
+        else query = "SELECT * FROM $TABLE_NAME WHERE $IS_DONE_COL = $isDoneFilter AND $CATEGORY_COL = '$categoryFilter'"
+
+        val result = sqLiteDatabase.rawQuery(query, null)
         for (i in 0 until result.count) {
             result.moveToPosition(i)
             val id = result.getString(0)
@@ -117,7 +126,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
 
             val taskItem = TaskItem(title, desc, DataTimeConverter.string2DateTime(dueDateTime), category,
                 id, DataTimeConverter.string2DateTime(createDateTime),
-                if(isDone == 0) false else true, if(isNotification == 0) false else true, if(isAttachment == 0) false else true)
+                isDone, isNotification, isAttachment)
 
             TaskViewModel.addTaskItem(taskItem)
         }
@@ -127,7 +136,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         val db = this.writableDatabase
         val values = ContentValues()
 
-        values.put(IS_DONE_COL, if (taskItem.isDone) 0 else 1)
+        values.put(IS_DONE_COL, if (taskItem.isDone == 1) 0 else 1)
 
         val whereClause = "$ID_COL = ?"
         val whereArgs = arrayOf(taskItem.id)

@@ -15,13 +15,13 @@ class TaskItem{
 
     var id: String = UUID.randomUUID().toString()
     var createDateTime: LocalDateTime = LocalDateTime.now()
-    var isDone: Boolean = false
-    var isNotification: Boolean = false
-    var isAttachment: Boolean = false
+    var isDone: Int = 0
+    var isNotification: Int = 0
+    var isAttachment: Int = 0
 
     constructor(name: String, description: String?, dueDateTime: LocalDateTime?, category: String?,
     id:String = UUID.randomUUID().toString(), createDateTime:LocalDateTime = LocalDateTime.now(),
-                isDone: Boolean = false, isNotification: Boolean = false, isAttachment: Boolean = false ){
+                isDone: Int = 0, isNotification: Int = 0, isAttachment: Int = 0 ){
 
         this.name = name
         this.description = description
@@ -37,10 +37,10 @@ class TaskItem{
 
     // functions to set appropriate image and color to done button
     fun imageResource(): Int =
-        if(isDone) R.drawable.ic_task_done_24
+        if(isDone == 1) R.drawable.ic_task_done_24
         else R.drawable.ic_task_not_done_24
     fun imageColor(context: Context): Int =
-        if(isDone) doneColor(context)
+        if(isDone == 1) doneColor(context)
         else notDoneColor(context)
 
     // utils functions to get appropriate colors

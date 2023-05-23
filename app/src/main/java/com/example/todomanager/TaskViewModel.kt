@@ -25,7 +25,7 @@ class TaskViewModel {
             taskItems.postValue(list)
         }
 
-        fun updateTaskItem(id: String, name: String, description: String?,
+        /*fun updateTaskItem(id: String, name: String, description: String?,
                            dueDateTime: LocalDateTime?, category: String?, isDone: Boolean = false,
                            isNotification: Boolean = false, isAttachment: Boolean = false){
             val list = taskItems.value
@@ -45,7 +45,7 @@ class TaskViewModel {
             val task = list?.find { it.id == newTask.id }!!
             task.isDone = true
             taskItems.postValue(list)
-        }
+        }*/
 
     }
 

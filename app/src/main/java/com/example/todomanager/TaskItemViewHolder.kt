@@ -17,7 +17,7 @@ RecyclerView.ViewHolder(binding.root) {
         binding.tvCategory.text = taskItem.category
 
         // set strike on text when task was done
-        if(taskItem.isDone){
+        if(taskItem.isDone == 1){
             binding.tvName.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             binding.tvDueDate.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             binding.tvDueTime.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
