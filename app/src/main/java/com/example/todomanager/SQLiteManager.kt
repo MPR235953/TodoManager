@@ -71,10 +71,10 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
     }
 
-    fun deleteTaskItem(taskItemId: Int) {
+    fun deleteTaskItem(taskItemId: String) {
         val db = this.writableDatabase
         val whereClause = "$ID_COL = ?"
-        val whereArgs = arrayOf(taskItemId).toString()
+        val whereArgs = taskItemId
 
         db.delete(TABLE_NAME, whereClause, arrayOf(whereArgs))
         db.close()

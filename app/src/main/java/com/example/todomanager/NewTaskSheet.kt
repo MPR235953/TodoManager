@@ -53,6 +53,11 @@ class NewTaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialo
         binding.btnSave.setOnClickListener{
             saveAction()
         }
+        binding.btnDelete.setOnClickListener{
+            MainActivity.sqLiteManager?.deleteTaskItem(taskItem!!.id)
+            MainActivity.sqLiteManager?.loadToLocalMemory()
+            dismiss()
+        }
         binding.btnClose.setOnClickListener{
             dismiss()
         }
