@@ -106,10 +106,10 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         val sqLiteDatabase = this.readableDatabase
 
         var query: String = ""
-        if(isDoneFilter == null && categoryFilter == null) query = "SELECT * FROM " + TABLE_NAME
-        else if (isDoneFilter != null && categoryFilter == null) query = "SELECT * FROM $TABLE_NAME WHERE $IS_DONE_COL = $isDoneFilter"
-        else if (isDoneFilter == null && categoryFilter != null) query = "SELECT * FROM $TABLE_NAME WHERE $CATEGORY_COL = '$categoryFilter'"
-        else query = "SELECT * FROM $TABLE_NAME WHERE $IS_DONE_COL = $isDoneFilter AND $CATEGORY_COL = '$categoryFilter'"
+        if(isDoneFilter == null && categoryFilter == null) query = "SELECT * FROM $TABLE_NAME ORDER BY $DUE_DATETIME_COL ASC"
+        else if (isDoneFilter != null && categoryFilter == null) query = "SELECT * FROM $TABLE_NAME WHERE $IS_DONE_COL = $isDoneFilter ORDER BY $DUE_DATETIME_COL ASC"
+        else if (isDoneFilter == null && categoryFilter != null) query = "SELECT * FROM $TABLE_NAME WHERE $CATEGORY_COL = '$categoryFilter' ORDER BY $DUE_DATETIME_COL ASC"
+        else query = "SELECT * FROM $TABLE_NAME WHERE $IS_DONE_COL = $isDoneFilter AND $CATEGORY_COL = '$categoryFilter' ORDER BY $DUE_DATETIME_COL ASC"
 
         val result = sqLiteDatabase.rawQuery(query, null)
         for (i in 0 until result.count) {
