@@ -1,6 +1,7 @@
 package com.example.todomanager
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
@@ -9,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.todomanager.databinding.FragmentTaskSheetBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -21,6 +24,20 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var isDone: Int = 0
     private var isNotification: Int = 0
     private var isAttachment: Int = 0
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        dialog.setOnShowListener { dialogInterface ->
+            val bottomSheetDialog = dialogInterface as BottomSheetDialog
+            val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+            }
+        }
+        return dialog
+    }
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentTaskSheetBinding.inflate(inflater, container, false)

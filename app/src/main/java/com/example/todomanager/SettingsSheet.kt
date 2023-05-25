@@ -1,6 +1,7 @@
 package com.example.todomanager
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
@@ -10,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.todomanager.databinding.FragmentSettingsSheetBinding
 import com.example.todomanager.databinding.FragmentTaskSheetBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.lang.Exception
 import java.time.LocalDate
@@ -20,6 +23,20 @@ import kotlin.math.min
 class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentSettingsSheetBinding
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        dialog.setOnShowListener { dialogInterface ->
+            val bottomSheetDialog = dialogInterface as BottomSheetDialog
+            val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+            }
+        }
+        return dialog
+    }
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentSettingsSheetBinding.inflate(inflater, container, false)
