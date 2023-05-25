@@ -1,24 +1,23 @@
 package com.example.todomanager
 
-import android.app.DatePickerDialog
 import android.app.Dialog
-import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.todomanager.databinding.FragmentSettingsSheetBinding
-import com.example.todomanager.databinding.FragmentTaskSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.lang.Exception
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import kotlin.math.min
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Intent
+import java.util.*
+import android.app.*
+import android.util.Log
 
 class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
 
@@ -50,6 +49,7 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
         binding.btnSave.setOnClickListener {
             setUpFilters()
             enableNotifier()
+            dismiss()
         }
     }
 
@@ -63,17 +63,108 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
 
     private fun validateNotifier(minutes: String): Boolean{
         try{
-            var m: Int = minutes.toInt()
+            val m: Long = minutes.toLong()
             if(m < 0) return false
         }catch (e: Exception){return false}
         return true
     }
 
     private fun enableNotifier(){
+        Log.i("INFO","entered enableNotifier")
+        createNotificationChannel()
         val notifyMinutes: String = binding.tieMinutesToNotification.text.toString()
         if (validateNotifier(notifyMinutes)){
             MainActivity.sqLiteManager?.notifyDelay = notifyMinutes.toInt()
+            scheduleNotification()
         }
+        Log.i("INFO","exit enableNotifier")
+    }
+
+    /*fun setAlarm(context: Context, alarmTime: Long) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            0
+        )
+
+        // Set the alarm to trigger at the specified time
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent)
+
+        // Request notification permissions (optional if already granted in the manifest)
+        val notificationPermission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+        val permissions = arrayOf(notificationPermission)
+        ActivityCompat.requestPermissions(context as Activity, permissions, 0)
+    }*/
+
+    @SuppressLint("ServiceCast")
+    private fun scheduleNotification()
+    {
+        Log.i("INFO","entered schedule")
+        val intent = Intent(context, Notification::class.java)
+        val title = "UWAGA"
+        val message = "noti"
+        intent.putExtra(Notification.titleExtra, title)
+        intent.putExtra(Notification.messageExtra, message)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            Notification.notificationID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val time = getTime()
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            time,
+            pendingIntent
+        )
+        showAlert(time, title, message)
+        Log.i("INFO","exit schedule")
+    }
+
+    private fun showAlert(time: Long, title: String, message: String)
+    {
+        Log.i("INFO","entered alert")
+        val date = Date(time)
+        val dateFormat = android.text.format.DateFormat.getLongDateFormat(context)
+        val timeFormat = android.text.format.DateFormat.getTimeFormat(context)
+
+        AlertDialog.Builder(context)
+            .setTitle("Notification Scheduled")
+            .setMessage(
+                "Title: " + title +
+                        "\nMessage: " + message +
+                        "\nAt: " + dateFormat.format(date) + " " + timeFormat.format(date))
+            .setPositiveButton("Okay"){_,_ ->}
+            .show()
+        Log.i("INFO","exit alert")
+    }
+
+    private fun getTime(): Long
+    {
+        Log.i("INFO","entered time")
+        val calendar = Calendar.getInstance()
+        calendar.set(2023, 4, 25, 18, 39)
+        Log.i("INFO","exit time")
+        return calendar.timeInMillis
+    }
+
+    private fun createNotificationChannel()
+    {
+        Log.i("INFO","entered create channel")
+        val name = "Notif Channel"
+        val desc = "A Description of the Channel"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(Notification.channelID, name, importance)
+        channel.description = desc
+        val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+        Log.i("INFO","exit create channel")
     }
 
 }
