@@ -8,7 +8,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 
-class Notification : BroadcastReceiver() {
+class NotificationReceiver : BroadcastReceiver() {
     companion object{
         const val notificationID = 1
         const val channelID = "channel1"

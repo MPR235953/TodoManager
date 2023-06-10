@@ -17,6 +17,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import java.util.*
 import android.app.*
+import android.text.Editable
 import android.util.Log
 import java.time.LocalDateTime
 
@@ -46,109 +47,39 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnClose.setOnClickListener {dismiss() }
+        val editable = Editable.Factory.getInstance()
+        binding.tieCategoryFilter.text = editable.newEditable(if(MainActivity.sqLiteManager?.categoryFilter != null) MainActivity.sqLiteManager?.categoryFilter else "")
+        binding.tieMinutesToNotification.text = editable.newEditable(if(MainActivity.sqLiteManager?.notifyDelay != null) MainActivity.sqLiteManager?.notifyDelay.toString() else "")
+        binding.cbHideDoneTasks.isChecked = if(MainActivity.sqLiteManager?.isDoneFilter == 0) true else false
+
+        binding.btnClose.setOnClickListener {dismiss()}
         binding.btnSave.setOnClickListener {
             setUpFilters()
-            enableNotifier()
-            dismiss()
-        }
+            setUpNotification()
+            dismiss()}
     }
-
-    private fun setUpFilters(){
-        MainActivity.sqLiteManager?.isDoneFilter = if(binding.cbHideDoneTasks.isChecked) 0 else null
-        val temp: String = binding.tieCategoryFilter.text.toString()
-        if(!temp.isEmpty()) MainActivity.sqLiteManager?.categoryFilter = temp
-        else MainActivity.sqLiteManager?.categoryFilter = null
-        MainActivity.sqLiteManager?.loadToLocalMemory()
-    }
-
-    private fun validateNotifier(minutes: String): Boolean{
+    private fun validateMinutes(minutes: String): Boolean{
         try{
-            val m: Long = minutes.toLong()
+            val m: Int = minutes.toInt()
             if(m < 0) return false
         }catch (e: Exception){return false}
         return true
     }
 
-    private fun enableNotifier(){
-        Log.i("INFO","entered enableNotifier")
-        createNotificationChannel()
+    private fun setUpFilters(){
+        MainActivity.sqLiteManager?.categoryFilter = if(!binding.tieCategoryFilter.text.toString().isEmpty()) binding.tieCategoryFilter.text.toString() else null
+        MainActivity.sqLiteManager?.isDoneFilter = if(binding.cbHideDoneTasks.isChecked) 0 else null
+        MainActivity.sqLiteManager?.loadToLocalMemory()
+    }
+
+    private fun setUpNotification() {
         val notifyMinutes: String = binding.tieMinutesToNotification.text.toString()
-        //if (validateNotifier(notifyMinutes)){
-        //    MainActivity.sqLiteManager?.notifyDelay = notifyMinutes.toInt()
-            scheduleNotification()
-        //}
-        Log.i("INFO","exit enableNotifier")
-    }
-
-    @SuppressLint("ServiceCast")
-    private fun scheduleNotification()
-    {
-        Log.i("INFO","entered schedule")
-        val intent = Intent(context, Notification::class.java)
-        val title = "UWAGA"
-        val message = "noti"
-        intent.putExtra(Notification.titleExtra, title)
-        intent.putExtra(Notification.messageExtra, message)
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            Notification.notificationID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val time = getTime()
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            time,
-            pendingIntent
-        )
-        showAlert(time, title, message)
-        Log.i("INFO","exit schedule")
-    }
-
-    private fun showAlert(time: Long, title: String, message: String)
-    {
-        Log.i("INFO","entered alert")
-        val date = Date(time)
-        val dateFormat = android.text.format.DateFormat.getLongDateFormat(context)
-        val timeFormat = android.text.format.DateFormat.getTimeFormat(context)
-
-        AlertDialog.Builder(context)
-            .setTitle("Notification Scheduled")
-            .setMessage(
-                "Title: " + title +
-                        "\nMessage: " + message +
-                        "\nAt: " + dateFormat.format(date) + " " + timeFormat.format(date))
-            .setPositiveButton("Okay"){_,_ ->}
-            .show()
-        Log.i("INFO","exit alert")
-    }
-
-    private fun getTime(): Long
-    {
-        Log.i("INFO","entered time")
-        val calendar = Calendar.getInstance()
-        val cdt = LocalDateTime.now().plusSeconds(10)
-        Log.i("INFO","${cdt.year}, ${cdt.monthValue-1}, ${cdt.dayOfMonth}, ${cdt.hour}, ${cdt.minute}, ${cdt.second}")
-        calendar.set(cdt.year, cdt.monthValue-1, cdt.dayOfMonth, cdt.hour, cdt.minute, cdt.second)
-        Log.i("INFO","exit time")
-        return calendar.timeInMillis
-    }
-
-    private fun createNotificationChannel()
-    {
-        Log.i("INFO","entered create channel")
-        val name = "Notif Channel"
-        val desc = "A Description of the Channel"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(Notification.channelID, name, importance)
-        channel.description = desc
-        val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
-        Log.i("INFO","exit create channel")
+        if (validateMinutes(notifyMinutes)) {
+            MainActivity.sqLiteManager?.notifyDelay = notifyMinutes.toInt()
+            val notificationHandler = context?.let { NotificationHandler(it) }
+            notificationHandler?.createNotificationChannel()
+            notificationHandler?.scheduleNotification()
+        }
     }
 
 }
