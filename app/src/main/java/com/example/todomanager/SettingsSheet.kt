@@ -18,6 +18,7 @@ import android.content.Intent
 import java.util.*
 import android.app.*
 import android.util.Log
+import java.time.LocalDateTime
 
 class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
 
@@ -73,31 +74,12 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
         Log.i("INFO","entered enableNotifier")
         createNotificationChannel()
         val notifyMinutes: String = binding.tieMinutesToNotification.text.toString()
-        if (validateNotifier(notifyMinutes)){
-            MainActivity.sqLiteManager?.notifyDelay = notifyMinutes.toInt()
+        //if (validateNotifier(notifyMinutes)){
+        //    MainActivity.sqLiteManager?.notifyDelay = notifyMinutes.toInt()
             scheduleNotification()
-        }
+        //}
         Log.i("INFO","exit enableNotifier")
     }
-
-    /*fun setAlarm(context: Context, alarmTime: Long) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            0
-        )
-
-        // Set the alarm to trigger at the specified time
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent)
-
-        // Request notification permissions (optional if already granted in the manifest)
-        val notificationPermission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
-        val permissions = arrayOf(notificationPermission)
-        ActivityCompat.requestPermissions(context as Activity, permissions, 0)
-    }*/
 
     @SuppressLint("ServiceCast")
     private fun scheduleNotification()
@@ -149,7 +131,9 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
     {
         Log.i("INFO","entered time")
         val calendar = Calendar.getInstance()
-        calendar.set(2023, 4, 25, 18, 39)
+        val cdt = LocalDateTime.now().plusSeconds(10)
+        Log.i("INFO","${cdt.year}, ${cdt.monthValue-1}, ${cdt.dayOfMonth}, ${cdt.hour}, ${cdt.minute}, ${cdt.second}")
+        calendar.set(cdt.year, cdt.monthValue-1, cdt.dayOfMonth, cdt.hour, cdt.minute, cdt.second)
         Log.i("INFO","exit time")
         return calendar.timeInMillis
     }
