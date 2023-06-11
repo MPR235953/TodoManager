@@ -2,11 +2,12 @@ package com.example.todomanager
 
 import android.content.Context
 import androidx.core.content.ContextCompat
+import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-class TaskItem{
+class TaskItem: Serializable{
 
     var name: String
     var description: String? = null

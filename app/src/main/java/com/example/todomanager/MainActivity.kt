@@ -19,6 +19,10 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val taskItem = intent.getSerializableExtra("taskItem") as? TaskItem
+        if(taskItem != null)
+            TaskSheet(this, taskItem).show(supportFragmentManager, "newTaskTag")
+
         // init sigleton
         sqLiteManager = SQLiteManager.instanceOfDatabase(this)
         //sqLiteManager?.clearTable()

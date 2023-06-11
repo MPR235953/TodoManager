@@ -16,15 +16,13 @@ class NotificationHandler(val context: Context) {
     @SuppressLint("ServiceCast")
     fun createNotification(taskItem: TaskItem) {
         Log.i("INFO","entered schedule")
-        val intent = Intent(context, NotificationReceiver::class.java)
-        intent.putExtra("taskId", taskItem.id.toString())
-        intent.putExtra("taskName", taskItem.name)
-        intent.putExtra("taskDescription", taskItem.description)
+        val intentToNotification = Intent(context, NotificationReceiver::class.java)
+        intentToNotification.putExtra("taskItem", taskItem)
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             taskItem.id.toInt(),
-            intent,
+            intentToNotification,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
@@ -35,7 +33,7 @@ class NotificationHandler(val context: Context) {
             time,
             pendingIntent
         )
-        showAlert(time, "sth", "sth")
+        //showAlert(time, "sth", "sth")
         Log.i("INFO","exit schedule")
     }
 

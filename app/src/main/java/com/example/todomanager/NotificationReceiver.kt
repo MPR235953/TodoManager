@@ -15,25 +15,25 @@ class NotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent)
     {
-        val taskId: Int? = intent.getStringExtra("taskId")?.toInt()
-        val name = intent.getStringExtra("taskName")
-        val description = intent.getStringExtra("taskDescription")
+        val taskItem: TaskItem = intent.getSerializableExtra("taskItem") as TaskItem
         Log.i("INFO","entered receiver")
+        val intentToMain = Intent(context, MainActivity::class.java)
+        intentToMain.putExtra("taskItem", taskItem)
         val notification = NotificationCompat.Builder(context, channelID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(name)
-            .setContentText(description)
+            .setContentTitle(taskItem.name)
+            .setContentText(taskItem.description)
             .setAutoCancel(true)
             .setContentIntent(PendingIntent.getActivity(
                 context,
-                taskId!!,
-                Intent(context, MainActivity::class.java),
+                taskItem.id.toInt(),
+                intentToMain,
                 PendingIntent.FLAG_UPDATE_CURRENT
             ))
             .build()
 
         val  manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(taskId, notification)
+        manager.notify(taskItem.id.toInt(), notification)
         Log.i("INFO","exit receiver")
     }
 }
