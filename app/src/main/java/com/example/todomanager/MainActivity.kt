@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // to get back to main activity and show task edit view after on notification click
         val taskItem = intent.getSerializableExtra("taskItem") as? TaskItem
         if(taskItem != null)
             TaskSheet(this, taskItem).show(supportFragmentManager, "newTaskTag")

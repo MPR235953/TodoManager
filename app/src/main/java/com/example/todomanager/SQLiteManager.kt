@@ -90,8 +90,8 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
 
         values.put(NAME_COl, taskItem.name)
         values.put(DESCRIPTION_COL, taskItem.description)
-        values.put(CREATE_DATETIME_COL, taskItem.createDateTime.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
-        if(taskItem.dueDateTime != null) values.put(DUE_DATETIME_COL, taskItem.dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
+        values.put(CREATE_DATETIME_COL, DataTimeConverter.dateTime2String(taskItem.createDateTime))
+        if(taskItem.dueDateTime != null) values.put(DUE_DATETIME_COL, DataTimeConverter.dateTime2String(taskItem.dueDateTime!!))
         values.put(CATEGORY_COL, taskItem.category)
         values.put(IS_DONE_COL, taskItem.isDone)
         values.put(IS_NOTIFICATION_COL, taskItem.isNotification)
