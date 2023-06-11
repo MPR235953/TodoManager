@@ -78,7 +78,9 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
             MainActivity.sqLiteManager?.notifyDelay = notifyMinutes.toInt()
             val notificationHandler = context?.let { NotificationHandler(it) }
             notificationHandler?.createNotificationChannel()
-            notificationHandler?.scheduleNotification()
+            notificationHandler?.createNotification(notifyMinutes.toInt())
+            notificationHandler?.deleteNotification()
+            MainActivity.sqLiteManager?.updateNotifications()
         }
     }
 

@@ -149,7 +149,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         if(taskItem == null){
             val newTask = TaskItem(name, description, this.dueDateTime, category, isDone=this.isDone, isNotification=this.isNotification, isAttachment=this.isAttachment)
             //TaskViewModel.addTaskItem(newTask)
-            MainActivity.sqLiteManager?.addTaskItem(newTask)
+            MainActivity.sqLiteManager?.addTaskItem(newTask)!!
         }
         else{
             MainActivity.sqLiteManager?.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category, this.isDone, this.isNotification, this.isAttachment)

@@ -16,7 +16,7 @@ import java.util.Date
 class NotificationHandler(val context: Context) {
 
     @SuppressLint("ServiceCast")
-    fun scheduleNotification()
+    fun createNotification(minutes: Int)
     {
         Log.i("INFO","entered schedule")
         val intent = Intent(context, NotificationReceiver::class.java)
@@ -33,7 +33,7 @@ class NotificationHandler(val context: Context) {
         )
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val time = getTime()
+        val time = getTime(minutes)
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             time,
@@ -41,6 +41,22 @@ class NotificationHandler(val context: Context) {
         )
         showAlert(time, title, message)
         Log.i("INFO","exit schedule")
+    }
+
+    fun deleteNotification(){
+        val intent = Intent(context, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            NotificationReceiver.notificationID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+    }
+
+    fun updateNotification(){
+
     }
 
     private fun showAlert(time: Long, title: String, message: String)
@@ -61,11 +77,11 @@ class NotificationHandler(val context: Context) {
         Log.i("INFO","exit alert")
     }
 
-    private fun getTime(): Long
+    private fun getTime(minutes: Int): Long
     {
         Log.i("INFO","entered time")
         val calendar = Calendar.getInstance()
-        val cdt = LocalDateTime.now().plusSeconds(10)
+        val cdt = LocalDateTime.now().plusMinutes(minutes.toLong())
         Log.i("INFO","${cdt.year}, ${cdt.monthValue-1}, ${cdt.dayOfMonth}, ${cdt.hour}, ${cdt.minute}, ${cdt.second}")
         calendar.set(cdt.year, cdt.monthValue-1, cdt.dayOfMonth, cdt.hour, cdt.minute, cdt.second)
         Log.i("INFO","exit time")

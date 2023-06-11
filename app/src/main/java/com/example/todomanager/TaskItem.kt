@@ -13,14 +13,14 @@ class TaskItem{
     var dueDateTime: LocalDateTime? = null
     var category: String? = null
 
-    var id: String = UUID.randomUUID().toString()
+    var id: Long = -1
     var createDateTime: LocalDateTime = LocalDateTime.now()
     var isDone: Int = 0
     var isNotification: Int = 0
     var isAttachment: Int = 0
 
     constructor(name: String, description: String?, dueDateTime: LocalDateTime?, category: String?,
-    id:String = UUID.randomUUID().toString(), createDateTime:LocalDateTime = LocalDateTime.now(),
+    id: Long = -1, createDateTime:LocalDateTime = LocalDateTime.now(),
                 isDone: Int = 0, isNotification: Int = 0, isAttachment: Int = 0 ){
 
         this.name = name
