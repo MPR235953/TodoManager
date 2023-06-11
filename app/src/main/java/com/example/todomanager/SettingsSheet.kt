@@ -39,6 +39,7 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
                 val behavior = BottomSheetBehavior.from(it)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 behavior.skipCollapsed = true
+                behavior.isDraggable = false
             }
         }
         return dialog
