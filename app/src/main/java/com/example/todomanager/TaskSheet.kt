@@ -25,6 +25,11 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var isNotification: Int = 0
     private var isAttachment: Int = 0
 
+    override fun onPause() {
+        if (this.isVisible()) this.dismiss()
+        super.onPause()
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener { dialogInterface ->
