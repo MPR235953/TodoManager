@@ -14,8 +14,7 @@ import java.util.Date
 class NotificationHandler(val context: Context) {
 
     @SuppressLint("ServiceCast")
-    fun createNotification(taskItem: TaskItem)
-    {
+    fun createNotification(taskItem: TaskItem) {
         Log.i("INFO","entered schedule")
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.putExtra("taskId", taskItem.id.toString())

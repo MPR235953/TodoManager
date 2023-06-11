@@ -76,7 +76,7 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
         val notifyMinutes: String = binding.tieMinutesToNotification.text.toString()
         if (validateMinutes(notifyMinutes)) {
             MainActivity.sqLiteManager?.notifyDelay = notifyMinutes.toInt()
-            MainActivity.sqLiteManager?.updateNotifications()
+            MainActivity.sqLiteManager?.updateNotifications(context)
         }
     }
 

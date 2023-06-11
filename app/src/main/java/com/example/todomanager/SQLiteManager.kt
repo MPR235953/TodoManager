@@ -1,6 +1,5 @@
 package com.example.todomanager
 
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -9,10 +8,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-class SQLiteManager(var context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
         var sqLiteManager: SQLiteManager? = null
 
         fun instanceOfDatabase(context: Context?): SQLiteManager? {
@@ -56,11 +54,11 @@ class SQLiteManager(var context: Context?) : SQLiteOpenHelper(context, DATABASE_
         db.execSQL(query)
     }
 
-    fun updateNotifications(){
-        val notificationHandler = context?.let { NotificationHandler(it) }
-        notificationHandler?.createNotificationChannel()
+    fun updateNotifications(context: Context?){
+        val notificationHandler = NotificationHandler(context!!)
+        notificationHandler.createNotificationChannel()
 
-        val query = "SELECT * FROM $TABLE_NAME WHERE $IS_NOTIFICATION_COL = 1"
+        val query = "SELECT * FROM $TABLE_NAME WHERE $IS_NOTIFICATION_COL = 1 AND $IS_DONE_COL = 0 AND $DUE_DATETIME_COL > '${DataTimeConverter.dateTime2String(LocalDateTime.now())}'"
         val sqLiteDatabase = this.readableDatabase
         val result = sqLiteDatabase.rawQuery(query, null)
         for (i in 0 until result.count) {
@@ -79,8 +77,8 @@ class SQLiteManager(var context: Context?) : SQLiteOpenHelper(context, DATABASE_
                 id, DataTimeConverter.string2DateTime(createDateTime),
                 isDone, isNotification, isAttachment)
 
-            notificationHandler?.deleteNotification(taskItem)
-            notificationHandler?.createNotification(taskItem)
+            notificationHandler.deleteNotification(taskItem)
+            notificationHandler.createNotification(taskItem)
         }
     }
 
