@@ -1,6 +1,7 @@
 package com.example.todomanager
 
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class DataTimeConverter {
@@ -19,6 +20,10 @@ class DataTimeConverter {
 
         fun time2String(localDateTime: LocalDateTime): String{
             return localDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+        }
+
+        fun toMilis(localDateTime: LocalDateTime): Long {
+            return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
     }
 }

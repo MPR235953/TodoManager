@@ -9,45 +9,42 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import java.time.LocalDateTime
-import java.util.Calendar
 import java.util.Date
 
 class NotificationHandler(val context: Context) {
 
     @SuppressLint("ServiceCast")
-    fun createNotification(minutes: Int)
+    fun createNotification(taskItem: TaskItem)
     {
         Log.i("INFO","entered schedule")
         val intent = Intent(context, NotificationReceiver::class.java)
-        val title = "UWAGA"
-        val message = "noti"
-        intent.putExtra(NotificationReceiver.titleExtra, title)
-        intent.putExtra(NotificationReceiver.messageExtra, message)
+        intent.putExtra("taskId", taskItem.id.toString())
+        intent.putExtra("taskName", taskItem.name)
+        intent.putExtra("taskDescription", taskItem.description)
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            NotificationReceiver.notificationID,
+            taskItem.id.toInt(),
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val time = getTime(minutes)
+        val time = getTime(taskItem)
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             time,
             pendingIntent
         )
-        showAlert(time, title, message)
+        showAlert(time, "sth", "sth")
         Log.i("INFO","exit schedule")
     }
 
-    fun deleteNotification(){
+    fun deleteNotification(taskItem: TaskItem){
         val intent = Intent(context, NotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            NotificationReceiver.notificationID,
+            taskItem.id.toInt(),
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -77,15 +74,19 @@ class NotificationHandler(val context: Context) {
         Log.i("INFO","exit alert")
     }
 
-    private fun getTime(minutes: Int): Long
-    {
-        Log.i("INFO","entered time")
+    private fun getTime(taskItem: TaskItem): Long{
+        val localDateTime = taskItem.dueDateTime?.minusMinutes(MainActivity.sqLiteManager?.notifyDelay!!.toLong())
+        if(localDateTime != null) return DataTimeConverter.toMilis(localDateTime)
+        else return -1
+
+        /*Log.i("INFO","entered time")
         val calendar = Calendar.getInstance()
         val cdt = LocalDateTime.now().plusMinutes(minutes.toLong())
         Log.i("INFO","${cdt.year}, ${cdt.monthValue-1}, ${cdt.dayOfMonth}, ${cdt.hour}, ${cdt.minute}, ${cdt.second}")
         calendar.set(cdt.year, cdt.monthValue-1, cdt.dayOfMonth, cdt.hour, cdt.minute, cdt.second)
         Log.i("INFO","exit time")
-        return calendar.timeInMillis
+        return calendar.timeInMillis*/
+
     }
 
     fun createNotificationChannel()

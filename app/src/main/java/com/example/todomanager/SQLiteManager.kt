@@ -1,18 +1,18 @@
 package com.example.todomanager
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
-import androidx.lifecycle.ViewModelProvider
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class SQLiteManager(var context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         var sqLiteManager: SQLiteManager? = null
 
         fun instanceOfDatabase(context: Context?): SQLiteManager? {
@@ -57,13 +57,30 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun updateNotifications(){
+        val notificationHandler = context?.let { NotificationHandler(it) }
+        notificationHandler?.createNotificationChannel()
+
         val query = "SELECT * FROM $TABLE_NAME WHERE $IS_NOTIFICATION_COL = 1"
         val sqLiteDatabase = this.readableDatabase
         val result = sqLiteDatabase.rawQuery(query, null)
         for (i in 0 until result.count) {
             result.moveToPosition(i)
+            val id = result.getLong(0)
+            val title = result.getString(1)
+            val desc = result.getString(2)
+            val createDateTime = result.getString(3)
             val dueDateTime = result.getString(4)
-            print(dueDateTime)
+            val category = result.getString(5)
+            val isDone = result.getInt(6)
+            val isNotification = result.getInt(7)
+            val isAttachment = result.getInt(8)
+
+            val taskItem = TaskItem(title, desc, DataTimeConverter.string2DateTime(dueDateTime), category,
+                id, DataTimeConverter.string2DateTime(createDateTime),
+                isDone, isNotification, isAttachment)
+
+            notificationHandler?.deleteNotification(taskItem)
+            notificationHandler?.createNotification(taskItem)
         }
     }
 
@@ -103,7 +120,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
 
         values.put(NAME_COl, name)
         values.put(DESCRIPTION_COL, description)
-        values.put(DUE_DATETIME_COL, dueDateTime!!.format(DateTimeFormatter.ofPattern("yy/MM/dd hh:mm")))
+        values.put(DUE_DATETIME_COL, DataTimeConverter.dateTime2String(dueDateTime!!))
         values.put(CATEGORY_COL, category)
         values.put(IS_DONE_COL, isDone)
         values.put(IS_NOTIFICATION_COL, isNotification)
@@ -150,8 +167,6 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
                 isDone, isNotification, isAttachment)
 
             TaskViewModel.addTaskItem(taskItem)
-
-            Log.i("INFO",">>>>>>>>>>>>>> $id $title $desc")
         }
     }
 
