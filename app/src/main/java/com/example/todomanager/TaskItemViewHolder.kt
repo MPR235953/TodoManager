@@ -28,7 +28,7 @@ RecyclerView.ViewHolder(binding.root) {
         binding.ibtnIsDone.setImageResource(taskItem.imageResourceForIsDoneButton())
         binding.ibtnIsDone.setColorFilter(taskItem.imageColorForIsDoneButton(context))
         binding.ibtnIsNotification.setColorFilter(taskItem.imageColorForIsNotificationButton(context))
-        binding.ibtnIsAttachment.setColorFilter(taskItem.imageColorForIsAttachmentButton(context))
+        binding.ibtnIsAttachment.setColorFilter(taskItem.imageColorForAddAttachmentButton(context))
 
         binding.ibtnIsDone.setOnClickListener{
             clickListener.changeTaskItemState(taskItem)

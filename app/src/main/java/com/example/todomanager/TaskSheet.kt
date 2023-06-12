@@ -59,7 +59,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
             binding.ibtnIsDone.setImageResource(taskItem!!.imageResourceForIsDoneButton())
             binding.ibtnIsDone.setColorFilter(taskItem!!.imageColorForIsDoneButton(requireContext()))
             binding.ibtnIsNotification.setColorFilter(taskItem!!.imageColorForIsNotificationButton(requireContext()))
-            binding.ibtnIsAttachment.setColorFilter(taskItem!!.imageColorForIsAttachmentButton(requireContext()))
+            binding.ibtnAddAttachment.setColorFilter(taskItem!!.imageColorForAddAttachmentButton(requireContext()))
 
             // set proper view
             binding.tvTaskTitle.text = "Edit Task"
@@ -95,7 +95,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         binding.ibtnDateTime.setOnClickListener{ openDateTimePicker() }
         binding.ibtnIsDone.setOnClickListener{ showChangedTaskItemState() }
         binding.ibtnIsNotification.setOnClickListener{ showChangedTaskItemNotification() }
-        binding.ibtnIsAttachment.setOnClickListener{ showChangedTaskItemAttachment() }  // change to attach method
+        binding.ibtnAddAttachment.setOnClickListener{ showChangedTaskItemAttachment() }  // change to attach method
 
         // bottom button listeners
         binding.btnSave.setOnClickListener{ saveAction() }
@@ -117,7 +117,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     }
     private fun showChangedTaskItemAttachment(){
         this.isAttachment = if(this.isAttachment == 1) 0 else 1
-        binding.ibtnIsAttachment.setColorFilter(TaskItem.previewImageColor(requireContext(), this.isAttachment))
+        binding.ibtnAddAttachment.setColorFilter(TaskItem.previewImageColor(requireContext(), this.isAttachment))
     }
 
 

@@ -54,7 +54,7 @@ class TaskItem: Serializable{
         else return ContextCompat.getColor(context, R.color.purple_200)
     }
 
-    fun imageColorForIsAttachmentButton(context: Context, isAttachment: Int? = null): Int {
+    fun imageColorForAddAttachmentButton(context: Context, isAttachment: Int? = null): Int {
         val flag = if (isAttachment != null) isAttachment else this.isAttachment
         if (flag == 1) return ContextCompat.getColor(context, R.color.teal_200)
         else return ContextCompat.getColor(context, R.color.purple_200)

@@ -51,10 +51,10 @@
                 android:scaleY="1.5"
                 android:tint="@color/purple_200"
                 android:src="@drawable/ic_notification_24"
-                app:layout_constraintEnd_toStartOf="@+id/ibtnIsAttachment"/>
+                app:layout_constraintEnd_toStartOf="@+id/ibtnAddAttachment"/>
 
             <ImageButton
-                android:id="@+id/ibtnIsAttachment"
+                android:id="@+id/ibtnAddAttachment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -206,20 +206,25 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/llAtachments"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="75dp"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textAlignment="center"
-                android:text="placeholder"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAttachList"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/black"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
