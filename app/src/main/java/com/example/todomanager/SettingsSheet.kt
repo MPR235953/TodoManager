@@ -25,11 +25,6 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentSettingsSheetBinding
 
-    override fun onPause() {
-        if (this.isVisible()) this.dismiss()
-        super.onPause()
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener { dialogInterface ->
@@ -42,6 +37,7 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
                 behavior.isDraggable = false
             }
         }
+        setRetainInstance(true)
         return dialog
     }
 

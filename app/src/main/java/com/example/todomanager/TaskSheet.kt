@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
@@ -26,11 +28,6 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var isNotification: Int = 0
     private var isAttachment: Int = 0
 
-    override fun onPause() {
-        if (this.isVisible()) this.dismiss()
-        super.onPause()
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener { dialogInterface ->
@@ -43,6 +40,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
                 behavior.isDraggable = false
             }
         }
+        setRetainInstance(true)
         return dialog
     }
 
@@ -96,7 +94,10 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         binding.ibtnDateTime.setOnClickListener{ openDateTimePicker() }
         binding.ibtnIsDone.setOnClickListener{ showChangedTaskItemState() }
         binding.ibtnIsNotification.setOnClickListener{ showChangedTaskItemNotification() }
-        binding.ibtnAddAttachment.setOnClickListener{ showChangedTaskItemAttachment() }  // change to attach method
+        binding.ibtnAddAttachment.setOnClickListener{
+            showChangedTaskItemAttachment()
+            openFileChooser()
+        }  // change to attach method
 
         // bottom button listeners
         binding.btnSave.setOnClickListener{ saveAction() }
@@ -104,6 +105,19 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         binding.btnClose.setOnClickListener{ dismiss() }
 
         setRecyclerView()
+    }
+
+    fun openFileChooser(){
+        val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
+        startActivityForResult(Intent.createChooser(intent, "Select a file"), 2137)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 2137){
+            val selectedFile: Uri? = data?.data
+            binding.tvTaskTitle.text = selectedFile.toString()  // temp
+        }
     }
 
     fun setRecyclerView(){
