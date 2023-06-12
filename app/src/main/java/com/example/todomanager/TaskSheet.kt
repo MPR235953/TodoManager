@@ -9,6 +9,7 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todomanager.databinding.FragmentTaskSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -17,7 +18,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFragment() {
+class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFragment(), AttachmentItemClickListener {
 
     private lateinit var binding: FragmentTaskSheetBinding
     private var dueDateTime: LocalDateTime? = null
@@ -101,6 +102,18 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         binding.btnSave.setOnClickListener{ saveAction() }
         binding.btnDelete.setOnClickListener{ deleteAction() }
         binding.btnClose.setOnClickListener{ dismiss() }
+
+        setRecyclerView()
+    }
+
+    fun setRecyclerView(){
+        val taskSheetFragment = this
+        AttachmentViewModel.attachmentItems.observe(taskSheetFragment){
+            binding.rvAttachList.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = AttachmentItemAdapter(it, taskSheetFragment)  // this cannot be used here
+            }
+        }
     }
 
     private fun showChangedDateTime(){
@@ -175,5 +188,4 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         MainActivity.sqLiteManager?.loadToLocalMemory()
         dismiss()
     }
-
 }
