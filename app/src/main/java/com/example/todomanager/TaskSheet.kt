@@ -16,6 +16,7 @@ import com.example.todomanager.databinding.FragmentTaskSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -116,7 +117,10 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 2137){
             val selectedFile: Uri? = data?.data
-            binding.tvTaskTitle.text = selectedFile.toString()  // temp
+            if (selectedFile != null) {
+                val resultLocation = FileHandler().copyFileToMyAppDir(requireContext().contentResolver, selectedFile)
+                binding.tvTaskTitle.text = resultLocation  // temp
+            }
         }
     }
 
