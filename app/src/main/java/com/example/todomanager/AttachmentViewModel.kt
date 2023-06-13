@@ -10,14 +10,20 @@ class AttachmentViewModel {
             attachmentItems.value = mutableListOf()
 
             // Dummy content
-            for (i in 1..10){
-                addAttachmentItem(AttachmentItem("/path/to/file/$i"))
-            }
+            //for (i in 1..10){
+            //    addAttachmentItem(AttachmentItem("/path/to/file/$i"))
+            //}
         }
 
         fun addAttachmentItem(newAttachment: AttachmentItem){
             val list = attachmentItems.value
             list!!.add(newAttachment)
+            attachmentItems.postValue(list)
+        }
+
+        fun delAttachmentItem(toDel: AttachmentItem){
+            val list = attachmentItems.value
+            list!!.remove(toDel)
             attachmentItems.postValue(list)
         }
 

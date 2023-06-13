@@ -28,8 +28,10 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var isDone: Int = 0
     private var isNotification: Int = 0
     private var isAttachment: Int = 0
+    private var selectedFiles: MutableList<Uri> = mutableListOf()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        refreshLists()
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener { dialogInterface ->
             val bottomSheetDialog = dialogInterface as BottomSheetDialog
@@ -108,6 +110,13 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         setRecyclerView()
     }
 
+    fun refreshLists(){
+        this.selectedFiles.clear()
+        AttachmentViewModel.attachmentItems.value?.clear()
+        for(attach in taskItem!!.attachmentItems)
+            AttachmentViewModel.addAttachmentItem(AttachmentItem(attach))
+    }
+
     fun openFileChooser(){
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
         startActivityForResult(Intent.createChooser(intent, "Select a file"), 2137)
@@ -115,17 +124,16 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 2137){
-            val selectedFile: Uri? = data?.data
-            if (selectedFile != null) {
-                val resultLocation = FileHandler().copyFileToMyAppDir(requireContext().contentResolver, selectedFile)
-                binding.tvTaskTitle.text = resultLocation  // temp
-            }
+        if(requestCode == 2137) {
+            this.selectedFiles.add(data?.data!!)
+            AttachmentViewModel.addAttachmentItem(AttachmentItem(this.selectedFiles.get(this.selectedFiles.size - 1).toString()))
         }
     }
 
     fun setRecyclerView(){
         val taskSheetFragment = this
+        for (attach in taskItem!!.attachmentItems)
+            AttachmentViewModel.addAttachmentItem(AttachmentItem(attach))
         AttachmentViewModel.attachmentItems.observe(taskSheetFragment){
             binding.rvAttachList.apply {
                 layoutManager = LinearLayoutManager(context)
@@ -192,6 +200,15 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
             MainActivity.sqLiteManager?.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category, this.isDone, this.isNotification, this.isAttachment)
             //TaskViewModel.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category)
         }
+
+        // store selected files
+        if (!this.selectedFiles.isEmpty()) {
+            for(selectedFile in this.selectedFiles){
+                val resultLocation = FileHandler().copyFileToMyAppDir(taskItem!!, requireContext().contentResolver, selectedFile)
+                taskItem!!.attachmentItems.add(resultLocation)
+                //AttachmentViewModel.addAttachmentItem(AttachmentItem(resultLocation))
+            }
+        }
         MainActivity.sqLiteManager?.loadToLocalMemory()
 
         // clear data on view
@@ -205,5 +222,13 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         MainActivity.sqLiteManager?.deleteTaskItem(taskItem!!.id)
         MainActivity.sqLiteManager?.loadToLocalMemory()
         dismiss()
+    }
+
+    override fun viewFile(attachmentItem: AttachmentItem) {
+        TODO("Not yet implemented")
+    }
+
+    override fun delAttachment(attachmentItem: AttachmentItem) {
+        TODO("Not yet implemented")
     }
 }

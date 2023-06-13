@@ -16,9 +16,9 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class FileHandler {
-    fun copyFileToMyAppDir(contentResolver: ContentResolver, sourceUri: Uri): String{
+    fun copyFileToMyAppDir(taskItem: TaskItem ,contentResolver: ContentResolver, sourceUri: Uri): String{
         val targetFileName = getFileNameFromUri(contentResolver, sourceUri)
-        val targetDirName = Environment.DIRECTORY_DOCUMENTS + "/TodoManagerAttachments"
+        val targetDirName = Environment.DIRECTORY_DOCUMENTS + "/TodoManagerAttachments/task_${taskItem.id}"
 
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, targetFileName)

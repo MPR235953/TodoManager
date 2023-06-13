@@ -20,6 +20,9 @@ class TaskItem: Serializable{
     var isNotification: Int = 0
     var isAttachment: Int = 0
 
+    //val viewModel = AttachmentViewModel()
+    val attachmentItems: MutableList<String> = mutableListOf()
+
     constructor(name: String, description: String?, dueDateTime: LocalDateTime?, category: String?,
     id: Long = -1, createDateTime:LocalDateTime = LocalDateTime.now(),
                 isDone: Int = 0, isNotification: Int = 0, isAttachment: Int = 0 ){

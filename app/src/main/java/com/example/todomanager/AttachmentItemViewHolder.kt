@@ -11,5 +11,13 @@ class AttachmentItemViewHolder(
 RecyclerView.ViewHolder(binding.root) {
     fun bindAttachmentItem(attachmentItem: AttachmentItem){
         binding.tvPath.text = attachmentItem.path
+
+        binding.ibtnDelAttachment.setOnClickListener{
+            clickListener.delAttachment(attachmentItem)
+        }
+
+        binding.cvAttachmentCellContainer.setOnClickListener{
+            clickListener.viewFile(attachmentItem)
+        }
     }
 }
