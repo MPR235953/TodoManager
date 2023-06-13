@@ -18,14 +18,11 @@ class TaskItem: Serializable{
     var createDateTime: LocalDateTime = LocalDateTime.now()
     var isDone: Int = 0
     var isNotification: Int = 0
-    var isAttachment: Int = 0
-
-    //val viewModel = AttachmentViewModel()
-    val attachmentItems: MutableList<String> = mutableListOf()
+    var attachments: String = ""
 
     constructor(name: String, description: String?, dueDateTime: LocalDateTime?, category: String?,
     id: Long = -1, createDateTime:LocalDateTime = LocalDateTime.now(),
-                isDone: Int = 0, isNotification: Int = 0, isAttachment: Int = 0 ){
+                isDone: Int = 0, isNotification: Int = 0, attachments: String = "" ){
 
         this.name = name
         this.description = description
@@ -36,7 +33,7 @@ class TaskItem: Serializable{
         this.createDateTime = createDateTime
         this.isDone = isDone
         this.isNotification = isNotification
-        this.isAttachment = isAttachment
+        this.attachments = attachments
     }
 
     // functions to set appropriate image and color to done button
@@ -57,8 +54,8 @@ class TaskItem: Serializable{
         else return ContextCompat.getColor(context, R.color.purple_200)
     }
 
-    fun imageColorForAddAttachmentButton(context: Context, isAttachment: Int? = null): Int {
-        val flag = if (isAttachment != null) isAttachment else this.isAttachment
+    fun imageColorForAddAttachmentButton(context: Context, attachments: String = ""): Int {
+        val flag = if (!this.attachments.isEmpty()) 1 else 0
         if (flag == 1) return ContextCompat.getColor(context, R.color.teal_200)
         else return ContextCompat.getColor(context, R.color.purple_200)
     }

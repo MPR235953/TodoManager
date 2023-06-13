@@ -31,7 +31,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val CATEGORY_COL = "category"
         private const val IS_DONE_COL = "is_done"
         private const val IS_NOTIFICATION_COL = "is_notification"
-        private const val IS_ATTACHMENT_COL = "is_attachment"
+        private const val ATTACHMENTS_COL = "attachments"
     }
 
     var isDoneFilter: Int? = null
@@ -49,7 +49,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
                 CATEGORY_COL + " TEXT," +
                 IS_DONE_COL + " INTEGER," +
                 IS_NOTIFICATION_COL + " INTEGER," +
-                IS_ATTACHMENT_COL + " INTEGER" + ")")
+                ATTACHMENTS_COL + " TEXT" + ")")
 
         db.execSQL(query)
     }
@@ -71,11 +71,11 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
             val category = result.getString(5)
             val isDone = result.getInt(6)
             val isNotification = result.getInt(7)
-            val isAttachment = result.getInt(8)
+            val attachments = result.getString(8)
 
             val taskItem = TaskItem(title, desc, DataTimeConverter.string2DateTime(dueDateTime), category,
                 id, DataTimeConverter.string2DateTime(createDateTime),
-                isDone, isNotification, isAttachment)
+                isDone, isNotification, attachments)
 
             notificationHandler.deleteNotification(taskItem)
             notificationHandler.createNotification(taskItem)
@@ -95,7 +95,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(CATEGORY_COL, taskItem.category)
         values.put(IS_DONE_COL, taskItem.isDone)
         values.put(IS_NOTIFICATION_COL, taskItem.isNotification)
-        values.put(IS_ATTACHMENT_COL, taskItem.isAttachment)
+        values.put(ATTACHMENTS_COL, taskItem.attachments)
 
         val taskId = db.insert(TABLE_NAME, null, values)
         db.close()
@@ -112,7 +112,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
 
     fun updateTaskItem(id: Long, name: String, description: String?,
                        dueDateTime: LocalDateTime?, category: String?, isDone: Int = 0,
-                       isNotification: Int = 0, isAttachment: Int = 0) {
+                       isNotification: Int = 0, attachments: String = "") {
         val db = this.writableDatabase
         val values = ContentValues()
 
@@ -122,7 +122,7 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(CATEGORY_COL, category)
         values.put(IS_DONE_COL, isDone)
         values.put(IS_NOTIFICATION_COL, isNotification)
-        values.put(IS_ATTACHMENT_COL, isAttachment)
+        values.put(ATTACHMENTS_COL, attachments)
 
         val whereClause = "$ID_COL = ?"
         val whereArgs = arrayOf(id.toString())
@@ -158,11 +158,11 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
             val category = result.getString(5)
             val isDone = result.getInt(6)
             val isNotification = result.getInt(7)
-            val isAttachment = result.getInt(8)
+            val attachments = result.getString(8)
 
             val taskItem = TaskItem(title, desc, DataTimeConverter.string2DateTime(dueDateTime), category,
                 id, DataTimeConverter.string2DateTime(createDateTime),
-                isDone, isNotification, isAttachment)
+                isDone, isNotification, attachments)
 
             TaskViewModel.addTaskItem(taskItem)
         }

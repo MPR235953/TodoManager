@@ -27,7 +27,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var dueDateTime: LocalDateTime? = null
     private var isDone: Int = 0
     private var isNotification: Int = 0
-    private var isAttachment: Int = 0
+    private var attachments: String = ""
     private var selectedFiles: MutableList<Uri> = mutableListOf()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -82,7 +82,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
             }
             this.isDone = taskItem!!.isDone
             this.isNotification = taskItem!!.isNotification
-            this.isAttachment = taskItem!!.isAttachment
+            this.attachments = taskItem!!.attachments
         }
         else{
             // set proper view
@@ -113,8 +113,12 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     fun refreshLists(){
         this.selectedFiles.clear()
         AttachmentViewModel.attachmentItems.value?.clear()
-        for(attach in taskItem!!.attachmentItems)
-            AttachmentViewModel.addAttachmentItem(AttachmentItem(attach))
+        if(this.taskItem != null){
+            for (attach in this.taskItem!!.attachments.split(" ")) {
+                if(!attach.isEmpty())
+                    AttachmentViewModel.addAttachmentItem(AttachmentItem(attach))
+            }
+        }
     }
 
     fun openFileChooser(){
@@ -132,8 +136,6 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
 
     fun setRecyclerView(){
         val taskSheetFragment = this
-        for (attach in taskItem!!.attachmentItems)
-            AttachmentViewModel.addAttachmentItem(AttachmentItem(attach))
         AttachmentViewModel.attachmentItems.observe(taskSheetFragment){
             binding.rvAttachList.apply {
                 layoutManager = LinearLayoutManager(context)
@@ -155,8 +157,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         binding.ibtnIsNotification.setColorFilter(TaskItem.previewImageColor(requireContext(), this.isNotification))
     }
     private fun showChangedTaskItemAttachment(){
-        this.isAttachment = if(this.isAttachment == 1) 0 else 1
-        binding.ibtnAddAttachment.setColorFilter(TaskItem.previewImageColor(requireContext(), this.isAttachment))
+        binding.ibtnAddAttachment.setColorFilter(TaskItem.previewImageColor(requireContext(), if(!this.attachments.isEmpty()) 0 else 1))
     }
 
 
@@ -190,25 +191,26 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         val description = binding.tieDescription.text.toString()
         val category = binding.tieCategory.text.toString()
 
-        // create new task item or update existing
-        if(taskItem == null){
-            val newTask = TaskItem(name, description, this.dueDateTime, category, isDone=this.isDone, isNotification=this.isNotification, isAttachment=this.isAttachment)
-            //TaskViewModel.addTaskItem(newTask)
-            MainActivity.sqLiteManager?.addTaskItem(newTask)!!
-        }
-        else{
-            MainActivity.sqLiteManager?.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category, this.isDone, this.isNotification, this.isAttachment)
-            //TaskViewModel.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category)
-        }
-
         // store selected files
         if (!this.selectedFiles.isEmpty()) {
             for(selectedFile in this.selectedFiles){
                 val resultLocation = FileHandler().copyFileToMyAppDir(taskItem!!, requireContext().contentResolver, selectedFile)
-                taskItem!!.attachmentItems.add(resultLocation)
+                this.attachments += resultLocation + " "
                 //AttachmentViewModel.addAttachmentItem(AttachmentItem(resultLocation))
             }
         }
+
+        // create new task item or update existing
+        if(this.taskItem == null){
+            val newTask = TaskItem(name, description, this.dueDateTime, category, isDone=this.isDone, isNotification=this.isNotification, attachments=this.attachments)
+            //TaskViewModel.addTaskItem(newTask)
+            MainActivity.sqLiteManager?.addTaskItem(newTask)!!
+        }
+        else{
+            MainActivity.sqLiteManager?.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category, this.isDone, this.isNotification, this.attachments)
+            //TaskViewModel.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category)
+        }
+
         MainActivity.sqLiteManager?.loadToLocalMemory()
 
         // clear data on view
