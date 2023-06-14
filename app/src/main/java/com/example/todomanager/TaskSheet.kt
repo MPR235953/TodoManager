@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var isNotification: Int = 0
     private var attachments: String = ""
     private var selectedFiles: MutableList<Uri> = mutableListOf()
+    private var delimiter = ","
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         refreshLists()
@@ -114,9 +116,9 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         this.selectedFiles.clear()
         AttachmentViewModel.attachmentItems.value?.clear()
         if(this.taskItem != null){
-            for (attach in this.taskItem!!.attachments.split(" ")) {
+            for (attach in this.taskItem!!.attachments.split(this.delimiter)) {
                 if(!attach.isEmpty())
-                    AttachmentViewModel.addAttachmentItem(AttachmentItem(attach))
+                    AttachmentViewModel.addAttachmentItem(AttachmentItem(taskItem!!.id, attach))
             }
         }
     }
@@ -130,7 +132,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 2137) {
             this.selectedFiles.add(data?.data!!)
-            AttachmentViewModel.addAttachmentItem(AttachmentItem(this.selectedFiles.get(this.selectedFiles.size - 1).toString()))
+            AttachmentViewModel.addAttachmentItem(AttachmentItem(taskItem!!.id, this.selectedFiles.get(this.selectedFiles.size - 1).toString()))
         }
     }
 
@@ -195,7 +197,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         if (!this.selectedFiles.isEmpty()) {
             for(selectedFile in this.selectedFiles){
                 val resultLocation = FileHandler().copyFileToMyAppDir(taskItem!!, requireContext().contentResolver, selectedFile)
-                this.attachments += resultLocation + " "
+                this.attachments += resultLocation + this.delimiter
                 //AttachmentViewModel.addAttachmentItem(AttachmentItem(resultLocation))
             }
         }
@@ -226,11 +228,16 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         dismiss()
     }
 
-    override fun viewFile(attachmentItem: AttachmentItem) {
+    override fun viewAttachment(attachmentItem: AttachmentItem) {
         TODO("Not yet implemented")
     }
 
     override fun delAttachment(attachmentItem: AttachmentItem) {
-        TODO("Not yet implemented")
+        val ti: TaskItem = MainActivity.sqLiteManager?.findTaskById(attachmentItem.taskId)!!
+        val attachments = ti.attachments
+        val attachmentList = attachments.split(this.delimiter) as MutableList<String>
+        attachmentList.remove(attachmentItem.path)
+        this.attachments = attachmentList.joinToString(this.delimiter)
+        AttachmentViewModel.delAttachmentItem(attachmentItem)
     }
 }

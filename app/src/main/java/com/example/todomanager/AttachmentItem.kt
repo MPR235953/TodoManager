@@ -1,5 +1,5 @@
 package com.example.todomanager
 
-class AttachmentItem(var path: String) {
+class AttachmentItem(var taskId: Long, var path: String) {
 
 }

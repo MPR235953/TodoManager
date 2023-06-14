@@ -17,7 +17,7 @@ RecyclerView.ViewHolder(binding.root) {
         }
 
         binding.cvAttachmentCellContainer.setOnClickListener{
-            clickListener.viewFile(attachmentItem)
+            clickListener.viewAttachment(attachmentItem)
         }
     }
 }

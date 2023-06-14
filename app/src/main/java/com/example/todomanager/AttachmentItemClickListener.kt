@@ -1,6 +1,6 @@
 package com.example.todomanager
 
 interface AttachmentItemClickListener {
-    fun viewFile(attachmentItem: AttachmentItem)
+    fun viewAttachment(attachmentItem: AttachmentItem)
     fun delAttachment(attachmentItem: AttachmentItem)
 }
