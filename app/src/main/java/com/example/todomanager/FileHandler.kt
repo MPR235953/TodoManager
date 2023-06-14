@@ -1,13 +1,16 @@
 package com.example.todomanager
 
+import android.content.ClipData
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.startActivity
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -16,7 +19,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class FileHandler {
-    fun copyFileToMyAppDir(taskItem: TaskItem ,contentResolver: ContentResolver, sourceUri: Uri): String{
+    fun copyFileToMyAppDir(context:Context ,taskItem: TaskItem ,contentResolver: ContentResolver, sourceUri: Uri): String{
         val targetFileName = getFileNameFromUri(contentResolver, sourceUri)
         val targetDirName = Environment.DIRECTORY_DOCUMENTS + "/TodoManagerAttachments/task_${taskItem.id}"
 
@@ -46,7 +49,21 @@ class FileHandler {
                 outputStream.write(buffer, 0, bytesRead)
             }
 
-            return "$targetDirName/$targetFileName"
+            //var img: ByteArray? = getImageData(contentResolver, destinationUri)
+
+            /*val intent = Intent(Intent.ACTION_VIEW)
+            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.setDataAndType(destinationUri, contentResolver.getType(destinationUri))
+            intent.clipData = ClipData.newRawUri(null, destinationUri)
+            context.startActivity(intent)
+
+            val test: Uri = Uri.parse("$targetDirName/$targetFileName")
+
+            val res = "{usrPath: $targetDirName/$targetFileName, sysPath: $destinationUri}"
+
+            val r = destinationUri.toString()*/
+
+            return destinationUri.toString()
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
@@ -74,6 +91,16 @@ class FileHandler {
         }
         // Default fallback if display name retrieval fails
         return "file"
+    }
+
+    fun getImageData(contentResolver: ContentResolver, fileUri: Uri): ByteArray? {
+        // Read the file data using the content URI
+        val inputStream = contentResolver.openInputStream(fileUri)
+        inputStream?.use {
+            return it.readBytes()
+        }
+
+        return null
     }
 
 

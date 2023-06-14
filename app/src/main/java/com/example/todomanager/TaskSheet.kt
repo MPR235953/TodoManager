@@ -3,6 +3,7 @@ package com.example.todomanager
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -12,12 +13,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todomanager.databinding.FragmentTaskSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import org.json.JSONObject
 import java.io.File
+import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -127,7 +131,6 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
         startActivityForResult(Intent.createChooser(intent, "Select a file"), 2137)
     }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 2137) {
@@ -196,7 +199,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         // store selected files
         if (!this.selectedFiles.isEmpty()) {
             for(selectedFile in this.selectedFiles){
-                val resultLocation = FileHandler().copyFileToMyAppDir(taskItem!!, requireContext().contentResolver, selectedFile)
+                val resultLocation = FileHandler().copyFileToMyAppDir(requireContext() ,taskItem!!, requireContext().contentResolver, selectedFile)
                 this.attachments += resultLocation + this.delimiter
                 //AttachmentViewModel.addAttachmentItem(AttachmentItem(resultLocation))
             }
@@ -229,7 +232,43 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     }
 
     override fun viewAttachment(attachmentItem: AttachmentItem) {
-        TODO("Not yet implemented")
+        val destinationUri = Uri.parse(URI.create(attachmentItem.path).toString())
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.setDataAndType(destinationUri, requireContext().contentResolver.getType(destinationUri))
+        intent.clipData = ClipData.newRawUri(null, destinationUri)
+        context?.startActivity(intent)
+
+        /*val file = getFileFromPath(attachmentItem.path)
+        if (file != null && file.exists()) {
+            val fileUri = Uri.fromFile(file)
+            val mimeType = getMimeType(fileUri)
+            openFileWithIntent(fileUri, mimeType)
+        }*/
+    }
+
+
+
+    private fun getFileFromPath(filePath: String): File? {
+        val file = File(filePath)
+        return if (file.exists()) file else null
+    }
+
+    private fun getMimeType(uri: Uri): String? {
+        val mimeTypeMap = MimeTypeMap.getSingleton()
+        return mimeTypeMap.getExtensionFromMimeType(requireContext().contentResolver.getType(uri))
+    }
+
+    private fun openFileWithIntent(fileUri: Uri, mimeType: String?) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(fileUri, mimeType)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
+            startActivity(intent)
+        } else {
+            // Handle the case when no application can open the file
+            // You can display an appropriate message to the user
+        }
     }
 
     override fun delAttachment(attachmentItem: AttachmentItem) {
