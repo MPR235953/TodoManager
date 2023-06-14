@@ -75,7 +75,5 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
     override fun changeTaskItemState(taskItem: TaskItem) {
         sqLiteManager?.toggleState(taskItem)
         sqLiteManager?.loadToLocalMemory()
-        //TaskViewModel.setDone(taskItem)
-        // update db
     }
 }

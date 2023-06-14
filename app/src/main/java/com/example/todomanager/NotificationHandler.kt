@@ -33,7 +33,6 @@ class NotificationHandler(val context: Context) {
             time,
             pendingIntent
         )
-        //showAlert(time, "sth", "sth")
         Log.i("INFO","exit schedule")
     }
 
@@ -49,45 +48,13 @@ class NotificationHandler(val context: Context) {
         alarmManager.cancel(pendingIntent)
     }
 
-    fun updateNotification(){
-
-    }
-
-    private fun showAlert(time: Long, title: String, message: String)
-    {
-        Log.i("INFO","entered alert")
-        val date = Date(time)
-        val dateFormat = android.text.format.DateFormat.getLongDateFormat(context)
-        val timeFormat = android.text.format.DateFormat.getTimeFormat(context)
-
-        AlertDialog.Builder(context)
-            .setTitle("Notification Scheduled")
-            .setMessage(
-                "Title: " + title +
-                        "\nMessage: " + message +
-                        "\nAt: " + dateFormat.format(date) + " " + timeFormat.format(date))
-            .setPositiveButton("Okay"){_,_ ->}
-            .show()
-        Log.i("INFO","exit alert")
-    }
-
     private fun getTime(taskItem: TaskItem): Long{
         val localDateTime = taskItem.dueDateTime?.minusMinutes(MainActivity.sqLiteManager?.notifyDelay!!.toLong())
         if(localDateTime != null) return DataTimeConverter.toMilis(localDateTime)
         else return -1
-
-        /*Log.i("INFO","entered time")
-        val calendar = Calendar.getInstance()
-        val cdt = LocalDateTime.now().plusMinutes(minutes.toLong())
-        Log.i("INFO","${cdt.year}, ${cdt.monthValue-1}, ${cdt.dayOfMonth}, ${cdt.hour}, ${cdt.minute}, ${cdt.second}")
-        calendar.set(cdt.year, cdt.monthValue-1, cdt.dayOfMonth, cdt.hour, cdt.minute, cdt.second)
-        Log.i("INFO","exit time")
-        return calendar.timeInMillis*/
-
     }
 
-    fun createNotificationChannel()
-    {
+    fun createNotificationChannel() {
         Log.i("INFO","entered create channel")
         val name = "Notif Channel"
         val desc = "A Description of the Channel"

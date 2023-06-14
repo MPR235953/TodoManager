@@ -238,37 +238,6 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         intent.setDataAndType(destinationUri, requireContext().contentResolver.getType(destinationUri))
         intent.clipData = ClipData.newRawUri(null, destinationUri)
         context?.startActivity(intent)
-
-        /*val file = getFileFromPath(attachmentItem.path)
-        if (file != null && file.exists()) {
-            val fileUri = Uri.fromFile(file)
-            val mimeType = getMimeType(fileUri)
-            openFileWithIntent(fileUri, mimeType)
-        }*/
-    }
-
-
-
-    private fun getFileFromPath(filePath: String): File? {
-        val file = File(filePath)
-        return if (file.exists()) file else null
-    }
-
-    private fun getMimeType(uri: Uri): String? {
-        val mimeTypeMap = MimeTypeMap.getSingleton()
-        return mimeTypeMap.getExtensionFromMimeType(requireContext().contentResolver.getType(uri))
-    }
-
-    private fun openFileWithIntent(fileUri: Uri, mimeType: String?) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(fileUri, mimeType)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        if (intent.resolveActivity(requireContext().packageManager) != null) {
-            startActivity(intent)
-        } else {
-            // Handle the case when no application can open the file
-            // You can display an appropriate message to the user
-        }
     }
 
     override fun delAttachment(attachmentItem: AttachmentItem) {

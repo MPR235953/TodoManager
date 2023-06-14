@@ -8,11 +8,6 @@ class AttachmentViewModel {
 
         init{
             attachmentItems.value = mutableListOf()
-
-            // Dummy content
-            //for (i in 1..10){
-            //    addAttachmentItem(AttachmentItem("/path/to/file/$i"))
-            //}
         }
 
         fun addAttachmentItem(newAttachment: AttachmentItem){

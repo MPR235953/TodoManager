@@ -13,8 +13,7 @@ class NotificationReceiver : BroadcastReceiver() {
         const val channelID = "channel1"
     }
 
-    override fun onReceive(context: Context, intent: Intent)
-    {
+    override fun onReceive(context: Context, intent: Intent) {
         val taskItem: TaskItem = intent.getSerializableExtra("taskItem") as TaskItem
         Log.i("INFO","entered receiver")
         val intentToMain = Intent(context, MainActivity::class.java)

@@ -49,20 +49,6 @@ class FileHandler {
                 outputStream.write(buffer, 0, bytesRead)
             }
 
-            //var img: ByteArray? = getImageData(contentResolver, destinationUri)
-
-            /*val intent = Intent(Intent.ACTION_VIEW)
-            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-            intent.setDataAndType(destinationUri, contentResolver.getType(destinationUri))
-            intent.clipData = ClipData.newRawUri(null, destinationUri)
-            context.startActivity(intent)
-
-            val test: Uri = Uri.parse("$targetDirName/$targetFileName")
-
-            val res = "{usrPath: $targetDirName/$targetFileName, sysPath: $destinationUri}"
-
-            val r = destinationUri.toString()*/
-
             return destinationUri.toString()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -78,7 +64,6 @@ class FileHandler {
         return "IOError"
     }
 
-
     private fun getFileNameFromUri(contentResolver: ContentResolver, uri: Uri): String {
         val cursor = contentResolver.query(uri, null, null, null, null)
         cursor?.use {
@@ -92,16 +77,5 @@ class FileHandler {
         // Default fallback if display name retrieval fails
         return "file"
     }
-
-    fun getImageData(contentResolver: ContentResolver, fileUri: Uri): ByteArray? {
-        // Read the file data using the content URI
-        val inputStream = contentResolver.openInputStream(fileUri)
-        inputStream?.use {
-            return it.readBytes()
-        }
-
-        return null
-    }
-
 
 }

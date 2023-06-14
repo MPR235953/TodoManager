@@ -8,11 +8,6 @@ class TaskViewModel {
 
         init{
             taskItems.value = mutableListOf()
-
-            // Dummy content
-            /*for (i in 1..10){
-                addTaskItem(TaskItem("task "+i,"desc", if(i % 2 == 0) LocalDateTime.now() else null, "Default", isDone = i % 2 == 0))
-            }*/
         }
 
         fun addTaskItem(newTask: TaskItem){
