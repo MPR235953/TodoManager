@@ -42,14 +42,16 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
 
         binding.svTaskByName.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                return false
+                sqLiteManager?.loadToLocalMemory()
+                return true
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
-                binding.svTaskByName.clearFocus()
-                if(!p0!!.isNotBlank()) sqLiteManager?.taskNameFilter = null
+                if(p0!!.isEmpty()){
+                    sqLiteManager?.taskNameFilter = null
+                    sqLiteManager?.loadToLocalMemory()
+                }
                 else sqLiteManager?.taskNameFilter = p0
-                sqLiteManager?.loadToLocalMemory()
                 return true
             }
 
