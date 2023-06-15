@@ -43,9 +43,9 @@ class FileHandler(var context: Context) {
         return File(this.AppDir, aName)
     }
 
-    fun loadFromAppDir(aName: String){
-        val file = File(this.AppDir, aName)
-        val inputAsString = FileInputStream(file).bufferedReader().use { it.readText() }
+    fun removeFiles(fileList: MutableList<String>){
+        for(file in fileList)
+            File(this.AppDir, file).delete()
     }
 
 }

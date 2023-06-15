@@ -212,7 +212,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         }
 
         // check if name is unique
-        if(MainActivity.sqLiteManager?.isNameUnique(name) == false){
+        if(taskItem == null && MainActivity.sqLiteManager?.isNameUnique(name) == false){
             Toast.makeText(requireContext(), "Task name should be unique", Toast.LENGTH_SHORT).show()
             return
         }
@@ -276,6 +276,8 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
             attachmentList = taskItem!!.attachments.split(this.delimiter) as MutableList<String>
             attachmentList.removeAll(this.toDelFiles)
             this.attachments = attachmentList.joinToString(this.delimiter)
+            val fileHandler = FileHandler(requireContext())
+            fileHandler.removeFiles(this.toDelFiles)
         }
         selectedFiles.removeAll(this.toDelFiles)
     }
