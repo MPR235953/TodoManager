@@ -8,20 +8,21 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.StrictMode
+import android.os.StrictMode.VmPolicy
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todomanager.databinding.FragmentTaskSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import org.json.JSONObject
 import java.io.File
-import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -37,6 +38,10 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var delimiter = ","
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // to show attachment in android 29 Q
+        val builder = VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())
+
         refreshLists()
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener { dialogInterface ->
@@ -199,9 +204,9 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
         // store selected files
         if (!this.selectedFiles.isEmpty()) {
             for(selectedFile in this.selectedFiles){
-                val resultLocation = FileHandler().copyFileToMyAppDir(requireContext() ,taskItem!!, requireContext().contentResolver, selectedFile)
-                this.attachments += resultLocation + this.delimiter
-                //AttachmentViewModel.addAttachmentItem(AttachmentItem(resultLocation))
+                val fileHandler = FileHandler(requireContext())
+                val attachment_name = fileHandler.copyToAppDir(selectedFile.toString())
+                this.attachments += attachment_name + this.delimiter
             }
         }
 
@@ -232,12 +237,12 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     }
 
     override fun viewAttachment(attachmentItem: AttachmentItem) {
-        val destinationUri = Uri.parse(URI.create(attachmentItem.path).toString())
+        val fileHandler = FileHandler(requireContext())
+        val uri = Uri.fromFile(fileHandler.generateFileFromName(attachmentItem.path))
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-        intent.setDataAndType(destinationUri, requireContext().contentResolver.getType(destinationUri))
-        intent.clipData = ClipData.newRawUri(null, destinationUri)
-        context?.startActivity(intent)
+        intent.setDataAndType(uri, "*/*")
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(intent)
     }
 
     override fun delAttachment(attachmentItem: AttachmentItem) {

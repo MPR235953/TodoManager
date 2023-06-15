@@ -1,81 +1,51 @@
 package com.example.todomanager
 
-import android.content.ClipData
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.startActivity
+import android.util.Log
+import androidx.core.net.toUri
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-class FileHandler {
-    fun copyFileToMyAppDir(context:Context ,taskItem: TaskItem ,contentResolver: ContentResolver, sourceUri: Uri): String{
-        val targetFileName = getFileNameFromUri(contentResolver, sourceUri)
-        val targetDirName = Environment.DIRECTORY_DOCUMENTS + "/TodoManagerAttachments/task_${taskItem.id}"
 
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, targetFileName)
-            put(MediaStore.MediaColumns.MIME_TYPE, contentResolver.getType(sourceUri))
-            put(MediaStore.MediaColumns.RELATIVE_PATH, targetDirName)
+class FileHandler(var context: Context) {
+
+    val AppDir = File(this.context.getExternalFilesDir(null), "TodoManagerDir")
+    init { this.AppDir.mkdirs() }
+
+    fun copyToAppDir(src: String): String{
+        val inputStream: InputStream? = context.contentResolver.openInputStream(src.toUri())
+        val parts = src.split(".")
+        val aName = "a_${System.currentTimeMillis()}.${parts[parts.size-1]}"
+
+        val file = File(this.AppDir, aName)
+        val outputStream = context.contentResolver.openOutputStream(file.toUri())
+
+        val buffer = ByteArray(1024)
+        var bytesRead: Int
+        while (inputStream!!.read(buffer).also { bytesRead = it } != -1) {
+            outputStream?.write(buffer, 0, bytesRead)
         }
 
-        var outputStream: OutputStream? = null
-        var inputStream: InputStream? = null
-
-        try {
-            val collection = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-            val destinationUri = contentResolver.insert(collection, contentValues)
-                ?: throw IOException("Failed to create destination URI")
-
-            outputStream = contentResolver.openOutputStream(destinationUri)
-                ?: throw IOException("Failed to open output stream")
-
-            inputStream = contentResolver.openInputStream(sourceUri)
-                ?: throw IOException("Failed to open input stream")
-
-            val buffer = ByteArray(1024)
-            var bytesRead: Int
-            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                outputStream.write(buffer, 0, bytesRead)
-            }
-
-            return destinationUri.toString()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                outputStream?.close()
-                inputStream?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-
-        return "IOError"
+        return aName
     }
 
-    private fun getFileNameFromUri(contentResolver: ContentResolver, uri: Uri): String {
-        val cursor = contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val displayNameColumnIndex = it.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
-                if (displayNameColumnIndex != -1) {
-                    return it.getString(displayNameColumnIndex)
-                }
-            }
-        }
-        // Default fallback if display name retrieval fails
-        return "file"
+    fun generateFileFromName(aName: String): File{
+        return File(this.AppDir, aName)
+    }
+
+    fun loadFromAppDir(aName: String){
+        val file = File(this.AppDir, aName)
+        val inputAsString = FileInputStream(file).bufferedReader().use { it.readText() }
     }
 
 }
