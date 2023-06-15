@@ -10,7 +10,7 @@ import androidx.core.app.NotificationCompat
 
 class NotificationReceiver : BroadcastReceiver() {
     companion object{
-        const val channelID = "channel1"
+        const val channelID = "channel_2137"
     }
 
     override fun onReceive(context: Context, intent: Intent) {

@@ -56,8 +56,8 @@ class NotificationHandler(val context: Context) {
 
     fun createNotificationChannel() {
         Log.i("INFO","entered create channel")
-        val name = "Notif Channel"
-        val desc = "A Description of the Channel"
+        val name = "TodoManager Notification Channel"
+        val desc = "TodoManager App uses this channel to send notifications associated with appropriate task when due date reach deadline"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel = NotificationChannel(NotificationReceiver.channelID, name, importance)
         channel.description = desc

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.core.net.toUri
 import java.io.File
 import java.io.FileInputStream
@@ -36,6 +37,7 @@ class FileHandler(var context: Context) {
             outputStream?.write(buffer, 0, bytesRead)
         }
 
+        Toast.makeText(context, "File saved in: ${this.AppDir}/${aName}", Toast.LENGTH_LONG).show()
         return aName
     }
 
