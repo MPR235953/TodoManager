@@ -35,7 +35,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var isDone: Int = 0
     private var isNotification: Int = 0
     private var attachments: String = ""
-    private var selectedFiles: MutableList<Uri> = mutableListOf()
+    private var selectedFiles: MutableList<String> = mutableListOf()
     private var toDelFiles: MutableList<String> = mutableListOf()
     private var delimiter = ","
 
@@ -142,8 +142,10 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 2137) {
-            this.selectedFiles.add(data?.data!!)
-            AttachmentViewModel.addAttachmentItem(AttachmentItem(taskItem!!.id, this.selectedFiles.get(this.selectedFiles.size - 1).toString()))
+            this.selectedFiles.add(data?.data!!.toString())
+            if(taskItem != null)
+                AttachmentViewModel.addAttachmentItem(AttachmentItem(taskItem!!.id, this.selectedFiles.get(this.selectedFiles.size - 1)))
+            else AttachmentViewModel.addAttachmentItem(AttachmentItem(-420, this.selectedFiles.get(this.selectedFiles.size - 1)))
         }
     }
 
@@ -210,6 +212,8 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
             return
         }
 
+        // delete selected files
+        if(!this.toDelFiles.isEmpty()){ delSelectedAttachments() }
         // store selected files
         if (!this.selectedFiles.isEmpty()) {
             for(selectedFile in this.selectedFiles){
@@ -218,18 +222,14 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
                 this.attachments += attachment_name + this.delimiter
             }
         }
-        // delete selected files
-        if(!this.toDelFiles.isEmpty()){ delSelectedAttachments() }
 
         // create new task item or update existing
         if(this.taskItem == null){
             val newTask = TaskItem(name, description, this.dueDateTime, category, isDone=this.isDone, isNotification=this.isNotification, attachments=this.attachments)
-            //TaskViewModel.addTaskItem(newTask)
             MainActivity.sqLiteManager?.addTaskItem(newTask)!!
         }
         else{
             MainActivity.sqLiteManager?.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category, this.isDone, this.isNotification, this.attachments)
-            //TaskViewModel.updateTaskItem(taskItem!!.id, name, description, this.dueDateTime, category)
         }
 
         MainActivity.sqLiteManager?.loadToLocalMemory()
@@ -269,8 +269,12 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     }
 
     fun delSelectedAttachments(){
-        val attachmentList = taskItem!!.attachments.split(this.delimiter) as MutableList<String>
-        attachmentList.removeAll(this.toDelFiles)
-        this.attachments = attachmentList.joinToString(this.delimiter)
+        val attachmentList: MutableList<String>
+        if(taskItem != null) {
+            attachmentList = taskItem!!.attachments.split(this.delimiter) as MutableList<String>
+            attachmentList.removeAll(this.toDelFiles)
+            this.attachments = attachmentList.joinToString(this.delimiter)
+        }
+        selectedFiles.removeAll(this.toDelFiles)
     }
 }
