@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -241,22 +242,23 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
 
     override fun viewAttachment(attachmentItem: AttachmentItem) {
         val fileHandler = FileHandler(requireContext())
-        val uri = Uri.fromFile(fileHandler.generateFileFromName(attachmentItem.path))
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "*/*")
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(intent)
+        val file: File = fileHandler.generateFileFromName(attachmentItem.path)
+        if(file.exists()) {
+            val uri = Uri.fromFile(file)
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(uri, "*/*")
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            startActivity(intent)
+        }
+        else{
+            val toast = Toast.makeText(requireContext(), "File does not exists", Toast.LENGTH_SHORT)
+            toast.show()
+        }
     }
 
     override fun delAttachment(attachmentItem: AttachmentItem) {
         this.toDelFiles.add(attachmentItem.path)
         AttachmentViewModel.delAttachmentItem(attachmentItem)
-        /*val ti: TaskItem = MainActivity.sqLiteManager?.findTaskById(attachmentItem.taskId)!!
-        val attachments = ti.attachments
-        val attachmentList = attachments.split(this.delimiter) as MutableList<String>
-        attachmentList.remove(attachmentItem.path)
-        this.attachments = attachmentList.joinToString(this.delimiter)
-        AttachmentViewModel.delAttachmentItem(attachmentItem)*/
     }
 
     fun delSelectedAttachments(){
