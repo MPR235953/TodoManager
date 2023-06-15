@@ -207,8 +207,13 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
 
         // require at least datetime & name
         if(this.dueDateTime == null || name.isEmpty()){
-            val toast = Toast.makeText(requireContext(), "DateTime and Name of task are mandatory", Toast.LENGTH_SHORT)
-            toast.show()
+            Toast.makeText(requireContext(), "DateTime and Name of task are mandatory", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // check if name is unique
+        if(MainActivity.sqLiteManager?.isNameUnique(name) == false){
+            Toast.makeText(requireContext(), "Task name should be unique", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -257,10 +262,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(intent)
         }
-        else{
-            val toast = Toast.makeText(requireContext(), "File does not exists", Toast.LENGTH_SHORT)
-            toast.show()
-        }
+        else Toast.makeText(requireContext(), "File does not exists", Toast.LENGTH_SHORT).show()
     }
 
     override fun delAttachment(attachmentItem: AttachmentItem) {

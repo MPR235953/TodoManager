@@ -109,6 +109,18 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
     }
 
+    fun isNameUnique(name: String): Boolean{
+        val sqLiteDatabase = this.readableDatabase
+        val query = "SELECT $NAME_COl FROM $TABLE_NAME"
+        val result = sqLiteDatabase.rawQuery(query, null)
+        for (i in 0 until result.count) {
+            result.moveToPosition(i)
+            if(name.equals(result.getString(0)))
+                return false
+        }
+        return true
+    }
+
     fun findTaskById(id: Long): TaskItem{
         val sqLiteDatabase = this.readableDatabase
         val query = "SELECT * FROM $TABLE_NAME WHERE $ID_COL = ${id}"
