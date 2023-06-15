@@ -51,7 +51,10 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
 
         val editable = Editable.Factory.getInstance()
         binding.tieCategoryFilter.text = editable.newEditable(if(MainActivity.sqLiteManager?.categoryFilter != null) MainActivity.sqLiteManager?.categoryFilter else "")
-        binding.tieMinutesToNotification.text = editable.newEditable(if(MainActivity.sqLiteManager?.notifyDelay != null) MainActivity.sqLiteManager?.notifyDelay.toString() else "")
+        //binding.tieMinutesToNotification.text = editable.newEditable(if(MainActivity.sqLiteManager?.notifyDelay != null) MainActivity.sqLiteManager?.notifyDelay.toString() else "")
+        val sharedPreferences = context?.getSharedPreferences("notification_minutes", Context.MODE_PRIVATE)
+        val value = sharedPreferences?.getString("notifyMinutes", "1")
+        binding.tieMinutesToNotification.text = editable.newEditable(value)
         binding.cbHideDoneTasks.isChecked = if(MainActivity.sqLiteManager?.isDoneFilter == 0) true else false
 
         binding.btnClose.setOnClickListener {dismiss()}
@@ -79,6 +82,11 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
         if (validateMinutes(notifyMinutes)) {
             MainActivity.sqLiteManager?.notifyDelay = notifyMinutes.toInt()
             MainActivity.sqLiteManager?.updateNotifications(context)
+
+            val sharedPreferences = context?.getSharedPreferences("notification_minutes", Context.MODE_PRIVATE)
+            val editor = sharedPreferences?.edit()
+            editor?.putString("notifyMinutes", notifyMinutes)
+            editor?.apply()
         }
     }
 
