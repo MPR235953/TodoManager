@@ -121,29 +121,6 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
         return true
     }
 
-    fun findTaskById(id: Long): TaskItem{
-        val sqLiteDatabase = this.readableDatabase
-        val query = "SELECT * FROM $TABLE_NAME WHERE $ID_COL = ${id}"
-        val result = sqLiteDatabase.rawQuery(query, null)
-        result.moveToPosition(0)
-        val title = result.getString(1)
-        val desc = result.getString(2)
-        val createDateTime = result.getString(3)
-        val dueDateTime = result.getString(4)
-        val category = result.getString(5)
-        val isDone = result.getInt(6)
-        val isNotification = result.getInt(7)
-        val attachments = result.getString(8)
-
-        val taskItem = TaskItem(title, desc, DataTimeConverter.string2DateTime(dueDateTime), category,
-            id, DataTimeConverter.string2DateTime(createDateTime),
-            isDone, isNotification, attachments)
-
-        sqLiteDatabase.close()
-
-        return taskItem
-    }
-
     fun updateTaskItem(id: Long, name: String, description: String?,
                        dueDateTime: LocalDateTime?, category: String?, isDone: Int = 0,
                        isNotification: Int = 0, attachments: String = "") {
