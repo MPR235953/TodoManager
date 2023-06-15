@@ -198,11 +198,17 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     }
 
     private fun saveAction(){
-
         // get data from layout
         val name = binding.tieName.text.toString()
         val description = binding.tieDescription.text.toString()
         val category = binding.tieCategory.text.toString()
+
+        // require at least datetime & name
+        if(this.dueDateTime == null || name.isEmpty()){
+            val toast = Toast.makeText(requireContext(), "DateTime and Name of task are mandatory", Toast.LENGTH_SHORT)
+            toast.show()
+            return
+        }
 
         // store selected files
         if (!this.selectedFiles.isEmpty()) {
@@ -212,6 +218,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
                 this.attachments += attachment_name + this.delimiter
             }
         }
+        // delete selected files
         if(!this.toDelFiles.isEmpty()){ delSelectedAttachments() }
 
         // create new task item or update existing
