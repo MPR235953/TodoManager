@@ -19,6 +19,8 @@ import java.util.*
 import android.app.*
 import android.text.Editable
 import android.util.Log
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import java.time.LocalDateTime
 
 class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
@@ -49,9 +51,17 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // set up spinner
         val editable = Editable.Factory.getInstance()
-        binding.tieCategoryFilter.text = editable.newEditable(if(MainActivity.sqLiteManager?.categoryFilter != null) MainActivity.sqLiteManager?.categoryFilter else "")
-        //binding.tieMinutesToNotification.text = editable.newEditable(if(MainActivity.sqLiteManager?.notifyDelay != null) MainActivity.sqLiteManager?.notifyDelay.toString() else "")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, MainActivity.sqLiteManager!!.selectAvailableCategories())
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spCategoryFilter.adapter = adapter
+
+        // remember selected category in app runtime
+        val position = adapter.getPosition(if(MainActivity.sqLiteManager?.categoryFilter == null) "ALL" else MainActivity.sqLiteManager?.categoryFilter)
+        if (position != AdapterView.INVALID_POSITION)
+            binding.spCategoryFilter.setSelection(position)
+
         val sharedPreferences = context?.getSharedPreferences("notification_minutes", Context.MODE_PRIVATE)
         val value = sharedPreferences?.getString("notifyMinutes", "1")
         binding.tieMinutesToNotification.text = editable.newEditable(value)
@@ -72,7 +82,7 @@ class SettingsSheet(context: Context) : BottomSheetDialogFragment() {
     }
 
     private fun setUpFilters(){
-        MainActivity.sqLiteManager?.categoryFilter = if(!binding.tieCategoryFilter.text.toString().isEmpty()) binding.tieCategoryFilter.text.toString() else null
+        MainActivity.sqLiteManager?.categoryFilter = if(!binding.spCategoryFilter.selectedItem.toString().equals("ALL")) binding.spCategoryFilter.selectedItem.toString() else null
         MainActivity.sqLiteManager?.isDoneFilter = if(binding.cbHideDoneTasks.isChecked) 0 else null
         MainActivity.sqLiteManager?.loadToLocalMemory()
     }

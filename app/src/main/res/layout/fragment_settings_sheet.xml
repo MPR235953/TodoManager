@@ -53,11 +53,11 @@
                 android:layout_marginVertical="10dp"
                 android:layout_marginLeft="20dp">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <Spinner
+                    android:id="@+id/spCategoryFilter"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/tieCategoryFilter"
-                    android:hint="Category to filter"/>
+                    android:layout_weight="2" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

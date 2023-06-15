@@ -79,6 +79,31 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
             notificationHandler.deleteNotification(taskItem)
             notificationHandler.createNotification(taskItem)
         }
+
+        result.close()
+        sqLiteDatabase.close()
+    }
+
+    fun selectAvailableCategories(): List<String>{
+        val categories = mutableListOf<String>()
+        categories.add("ALL")
+
+        val query = "SELECT $CATEGORY_COL FROM $TABLE_NAME"
+        val sqLiteDatabase = this.readableDatabase
+        val result = sqLiteDatabase.rawQuery(query, null)
+        var category = ""
+
+        for (i in 0 until result.count) {
+            result.moveToPosition(i)
+            category = result.getString(0)
+            if(category.isEmpty()) continue
+            categories.add(result.getString(0))
+        }
+
+        result.close()
+        sqLiteDatabase.close()
+
+        return categories.distinct()
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldVersion: Int, newVersion: Int) {}
@@ -118,6 +143,8 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
             if(name.equals(result.getString(0)))
                 return false
         }
+        result.close()
+        sqLiteDatabase.close()
         return true
     }
 
@@ -177,6 +204,9 @@ class SQLiteManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
 
             TaskViewModel.addTaskItem(taskItem)
         }
+
+        result.close()
+        sqLiteDatabase.close()
     }
 
     fun toggleState(taskItem: TaskItem){
