@@ -35,6 +35,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     private var isNotification: Int = 0
     private var attachments: String = ""
     private var selectedFiles: MutableList<Uri> = mutableListOf()
+    private var toDelFiles: MutableList<String> = mutableListOf()
     private var delimiter = ","
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -123,6 +124,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
 
     fun refreshLists(){
         this.selectedFiles.clear()
+        this.toDelFiles.clear()
         AttachmentViewModel.attachmentItems.value?.clear()
         if(this.taskItem != null){
             for (attach in this.taskItem!!.attachments.split(this.delimiter)) {
@@ -209,6 +211,7 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
                 this.attachments += attachment_name + this.delimiter
             }
         }
+        if(!this.toDelFiles.isEmpty()){ delSelectedAttachments() }
 
         // create new task item or update existing
         if(this.taskItem == null){
@@ -246,11 +249,19 @@ class TaskSheet(context: Context, var taskItem: TaskItem?) : BottomSheetDialogFr
     }
 
     override fun delAttachment(attachmentItem: AttachmentItem) {
-        val ti: TaskItem = MainActivity.sqLiteManager?.findTaskById(attachmentItem.taskId)!!
+        this.toDelFiles.add(attachmentItem.path)
+        AttachmentViewModel.delAttachmentItem(attachmentItem)
+        /*val ti: TaskItem = MainActivity.sqLiteManager?.findTaskById(attachmentItem.taskId)!!
         val attachments = ti.attachments
         val attachmentList = attachments.split(this.delimiter) as MutableList<String>
         attachmentList.remove(attachmentItem.path)
         this.attachments = attachmentList.joinToString(this.delimiter)
-        AttachmentViewModel.delAttachmentItem(attachmentItem)
+        AttachmentViewModel.delAttachmentItem(attachmentItem)*/
+    }
+
+    fun delSelectedAttachments(){
+        val attachmentList = taskItem!!.attachments.split(this.delimiter) as MutableList<String>
+        attachmentList.removeAll(this.toDelFiles)
+        this.attachments = attachmentList.joinToString(this.delimiter)
     }
 }
